@@ -1,2 +1,1 @@
-# busyfs
-Read-only library-based virtual FS
+- https://github.com/pytorch/pytorch/pull/123002/files - self-mmap
