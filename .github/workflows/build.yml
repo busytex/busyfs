@@ -17,7 +17,7 @@ jobs:
       - name: Test Busybox
         run: |
           ls -lah log_file_access.so
-          nm -U log_file_access.so
+          nm log_file_access.so
           LD_PRELOAD=$PWD/log_file_access.so ./build/busybox cat Makefile
           strace -f ./build/busybox cat Makefile
           #LD_PRELOAD=log_file_access.so ./build/busybox ls
