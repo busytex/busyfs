@@ -17,8 +17,9 @@ jobs:
       - name: Test Busybox
         run: |
           ./build/busybox
-          LD_PRELOAD=log_file_access.so ./build/busybox ls
+          strace -f ./build/busybox cat Makefile
           LD_PRELOAD=log_file_access.so ./build/busybox cat Makefile
+          #LD_PRELOAD=log_file_access.so ./build/busybox ls
 
       - uses: actions/upload-artifact@v4
         with:
