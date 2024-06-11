@@ -1,3 +1,8 @@
+```shell
+wget https://raw.githubusercontent.com/coreutils/coreutils/master/src/ls.c
+wget https://raw.githubusercontent.com/coreutils/coreutils/master/src/cat.c
+```
+
 ### Virtual and LD_PRELOAD readonly file system (reading ISO / TAR / ZIP)
 - LD_PRELOAD FS that could work with package zip archvies (CTAN? ftp://tug.org/texlive/Contents/live/texmf-dist/)
 - LD_PRELOAD FS that could work with texlive iso files containing zip archives
