@@ -46,6 +46,15 @@ int open(const char *path, int flags)
     return orig_func(path, flags);
 }
 
+int open64(const char *path, int flags)
+{
+    fprintf(stderr, "log_file_access_preload: open64(\"%s\", %d)\n", path, flags);
+
+    typedef int (*orig_open_func_type)(const char *pathname, int flags);
+    orig_open_func_type orig_func = (orig_open_func_type)dlsym(RTLD_NEXT, "open64");
+    return orig_func(path, flags);
+}
+
 int openat(int dirfd, const char *path, int flags)
 {
     fprintf(stderr, "log_file_access_preload: openat(%d, \"%s\", %d)\n", dirfd, path, flags);
