@@ -11,8 +11,11 @@ jobs:
         with:
           fetch-depth: 1
       
-      - name: Busybox
+      - name: Build Busybox
         run: make -j2 busybox
+      
+      - name: Test Busybox
+        run: ./build/busybox ls && ./build/busybox cat Makefile
 
       - uses: actions/upload-artifact@v4
         with:
