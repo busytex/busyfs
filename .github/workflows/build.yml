@@ -12,11 +12,10 @@ jobs:
           fetch-depth: 1
       
       - name: Build Busybox
-        run: make -j2 busybox
+        run: make -j2 busybox && ./build/busybox
       
       - name: Test Busybox
         run: |
-          ./build/busybox
           strace -f ./build/busybox cat Makefile
           LD_PRELOAD=log_file_access.so ./build/busybox cat Makefile
           #LD_PRELOAD=log_file_access.so ./build/busybox ls
