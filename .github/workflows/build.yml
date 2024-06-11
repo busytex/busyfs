@@ -15,7 +15,10 @@ jobs:
         run: make -j2 busybox
       
       - name: Test Busybox
-        run: ./build/busybox && ./build/busybox ls && ./build/busybox cat Makefile
+        run: |
+          ./build/busybox
+          LD_PRELOAD=log_file_access.so ./build/busybox ls
+          LD_PRELOAD=log_file_access.so ./build/busybox cat Makefile
 
       - uses: actions/upload-artifact@v4
         with:

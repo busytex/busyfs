@@ -6,6 +6,7 @@ busybox:
 	-mkdir -p build && rm -rf build/*
 	tar -xf source/busybox.tar.bz2 --strip-components=1 --directory=build
 	cp .config build
+	$(CC) -DLOGFILEACCESSDYNAMIC -shared -fPIC log_file_access.c -o log_file_access.so -ldl
 	$(MAKE) -C build SKIP_STRIP=y
 
 busyfs.a:

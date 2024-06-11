@@ -1,7 +1,8 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
-
+//'access', 'lstat', 'fstat', 'stat', 'open', 'read', 'unlink', 'mmap',  
+// 'readv', 'close', 'lseek', 'writev', 'fcntl', 'munmap', 'arch_prctl', 'brk', 'execve', 'exit_group', 'getcwd', 'getdents64', 'ioctl', 'rt_sigaction', 'rt_sigprocmask', 'set_tid_address'
 #ifdef LOGFILEACCESSSTATIC
 
 FILE* orig_fopen(const char *path, const char *mode);
