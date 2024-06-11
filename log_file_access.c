@@ -27,7 +27,6 @@ int open(const char *path, int mode)
 #include <unistd.h>
 #include <errno.h>
 #include <dlfcn.h>
-#include <sys/stat.h>
 
 FILE* fopen(const char *path, const char *mode)
 {
@@ -56,12 +55,4 @@ int openat(int dirfd, const char *path, int flags)
     return orig_func(dirfd, path, flags);
 }
 
-int openat(int dirfd, const char *path, int flags, mode_t mode)
-{
-    fprintf(stderr, "log_file_access_preload: openat(%d, \"%s\", %d, %d)\n", dirfd, path, flags, (int)mode);
-
-    typedef int (*orig_open_func_type)(int dirfd, const char *pathname, int flags, mode_t mode);
-    orig_open_func_type orig_func = (orig_open_func_type)dlsym(RTLD_NEXT, "openat");
-    return orig_func(dirfd, path, flags, mode);
-}
 #endif
