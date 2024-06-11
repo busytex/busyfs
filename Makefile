@@ -2,7 +2,7 @@ URL_busybox ?= https://busybox.net/downloads/busybox-1.33.0.tar.bz2
 
 busybox:
 	mkdir -p source
-	#wget -nc "$(URL_busybox)" -O source/$@.tar.bz2
+	wget -nc "$(URL_busybox)" -O source/$@.tar.bz2
 	-mkdir -p build && rm -rf build/*
 	tar -xf source/busybox.tar.bz2 --strip-components=1 --directory=build
 	cp .config build
