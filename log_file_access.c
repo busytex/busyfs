@@ -85,7 +85,7 @@ int fstatat(int dirfd, const char *restrict pathname, struct stat *restrict stat
     typedef int (*orig_func_type)(int dirfd, const char *restrict pathname, struct stat *restrict statbuf, int flags);
     fprintf(stderr, "log_file_access_preload: fstat(%d, \"%s\", %p, %d)\n", dirfd, pathname, (void*)statbuf, flags);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "fstatat");
-    return orig_func(difd, pathname, statbuf, flags);
+    return orig_func(dirfd, pathname, statbuf, flags);
 }
 // 'lstat', 'fstat', 'stat', 'unlink', 'mmap', 'rename', 'link', 'rmdir', 'mkdir'
 
