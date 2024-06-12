@@ -17,10 +17,12 @@ jobs:
       - name: Test Busybox
         run: |
             mkdir dist-native
-            mv busytex dist-native
+            mv busytex dist-native && chmod +x dist-native/busytex
             tar -xf texlive-basic.tar.gz
             cp -r build/texlive-basic dist-native/texlive
             cp build/texlive-basic/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt dist-native
+
+            readelf -l dist-native/busytex
 
             export DIST=$PWD/dist-native
             export PDFLATEXFMT=$DIST/pdflatex.fmt
