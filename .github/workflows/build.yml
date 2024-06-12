@@ -17,6 +17,7 @@ jobs:
       - name: Test Busybox
         run: |
             mkdir dist-native
+            mv busytex dist-native
             tar -xf texlive-basic.tar.gz
             cp -r build/texlive-basic dist-native/texlive
             cp build/texlive-basic/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt dist-native
