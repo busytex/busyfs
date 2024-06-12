@@ -22,8 +22,6 @@ jobs:
             cp -r build/texlive-basic dist-native/texlive
             cp build/texlive-basic/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt dist-native
 
-            readelf -l dist-native/busytex
-
             export DIST=$PWD/dist-native
             export PDFLATEXFMT=$DIST/pdflatex.fmt
             export BUSYTEX=$DIST/busytex
@@ -32,10 +30,10 @@ jobs:
             export TEXMFCNF=$TEXMFDIST/web2c
             export FONTCONFIG_PATH=$DIST
             cd example
-            $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-            $BUSYTEX bibtex8 --8bit example.aux
-            $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-            $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            LD_PRELOAD=$PWD/log_file_access.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            LD_PRELOAD=$PWD/log_file_access.so $BUSYTEX bibtex8 --8bit example.aux
+            LD_PRELOAD=$PWD/log_file_access.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            LD_PRELOAD=$PWD/log_file_access.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
             ls example.pdf
 #            ls -lah log_file_access.so
 #            nm log_file_access.so
