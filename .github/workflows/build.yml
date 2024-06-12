@@ -30,11 +30,14 @@ jobs:
             export TEXMFCNF=$TEXMFDIST/web2c
             export FONTCONFIG_PATH=$DIST
             cd example
+            echo LOG_FILE_ACCESS
             LD_PRELOAD=$PWD/../log_file_access.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-            LD_PRELOAD=$PWD/../log_file_access.so $BUSYTEX bibtex8 --8bit example.aux
-            LD_PRELOAD=$PWD/../log_file_access.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-            LD_PRELOAD=$PWD/../log_file_access.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-            ls example.pdf
+            echo STRACE
+            strace -f -e trace=file $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            #LD_PRELOAD=$PWD/../log_file_access.so $BUSYTEX bibtex8 --8bit example.aux
+            #LD_PRELOAD=$PWD/../log_file_access.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            #LD_PRELOAD=$PWD/../log_file_access.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            #ls example.pdf
 #            ls -lah log_file_access.so
 #            nm log_file_access.so
 #            LD_PRELOAD=$PWD/log_file_access.so /usr/bin/cat Makefile
