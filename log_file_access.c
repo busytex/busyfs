@@ -56,6 +56,7 @@ int open64(const char *path, int flags)
 }
 
 int openat(int dirfd, const char *path, int flags)
+//int openat(int dirfd, const char *path, int flags, mode_t mode)
 {
     fprintf(stderr, "log_file_access_preload: openat(%d, \"%s\", %d)\n", dirfd, path, flags);
 
