@@ -57,7 +57,7 @@ int faccessat(int dirfd, const char *path, int mode, int flags)
     fprintf(stderr, "log_file_access_preload: faccessat(%d, \"%s\", %d, %d)\n", dirfd, path, mode, flags);
     typedef int (*orig_open_func_type)(int dirfd, const char *pathname, int mode, int flags);
     orig_open_func_type orig_func = (orig_open_func_type)dlsym(RTLD_NEXT, "faccessat");
-    return orig_func(path, flags);
+    return orig_func(dirfd, path, mode, flags);
 }
 
 // 'lstat', 'fstat', 'stat', 'unlink', 'mmap', 'rename', 'link', 'rmdir', 'mkdir'
