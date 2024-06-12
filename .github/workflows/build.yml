@@ -12,19 +12,37 @@ jobs:
           fetch-depth: 1
       
       - name: Build Busybox
-        run: make -j2 busybox && ./build/busybox
+        run:  wget https://github.com/busytex/busyfs/releases/download/data/busytex https://github.com/busytex/busyfs/releases/download/data/texlive-basic.tar.gz && make -j2 busybox && ./build/busybox
       
       - name: Test Busybox
         run: |
-          ls -lah log_file_access.so
-          nm log_file_access.so
-          LD_PRELOAD=$PWD/log_file_access.so /usr/bin/cat Makefile
-          nm -u ./build/busybox
-          LD_PRELOAD=$PWD/log_file_access.so ./build/busybox cat Makefile
-          strace -f ./build/busybox cat Makefile
-          #LD_PRELOAD=log_file_access.so ./build/busybox ls
+            mkdir dist-native
+            tar -xf texlive-basic.tar.gz --strip-components
+            cp -r build/texlive-basic dist-native/texlive
+            cp build/texlive-basic/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt dist-native
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: build
-          path: build
+            export DIST=$PWD/dist-native
+            export PDFLATEXFMT=$DIST/pdflatex.fmt
+            export BUSYTEX=$DIST/busytex
+            export TEXMFDIST=$DIST/texlive/texmf-dist
+            export TEXMFVAR=$DIST/texlive/texmf-dist/texmf-var
+            export TEXMFCNF=$TEXMFDIST/web2c
+            export FONTCONFIG_PATH=$DIST
+            cd example
+            $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            $BUSYTEX bibtex8 --8bit example.aux
+            $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            ls example.pdf
+#            ls -lah log_file_access.so
+#            nm log_file_access.so
+#            LD_PRELOAD=$PWD/log_file_access.so /usr/bin/cat Makefile
+#            nm -u ./build/busybox
+#            LD_PRELOAD=$PWD/log_file_access.so ./build/busybox cat Makefile
+#            strace -f ./build/busybox cat Makefile
+#            #LD_PRELOAD=log_file_access.so ./build/busybox ls
+#
+#      - uses: actions/upload-artifact@v4
+#        with:
+#          name: build
+#          path: build
