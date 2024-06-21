@@ -150,10 +150,10 @@ int renameat(int olddirfd, const char *oldpath, int newdirfd, const char *newpat
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "renameat");
     return orig_func(olddirfd, oldpath, newdirfd, newpath);
 }
-int renameat2(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags)
+int renameat2(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, unsigned int flags)
 {
-    typedef int (*orig_func_type)(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags);
-    fprintf(stderr, "log_file_access_preload: renameat2(%d, \"%s\", %d, \"%s\", %d)\n", olddirfd, oldpath, newdirfd, newpath, flags);
+    typedef int (*orig_func_type)(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, unsigned int flags);
+    fprintf(stderr, "log_file_access_preload: renameat2(%d, \"%s\", %d, \"%s\", %u)\n", olddirfd, oldpath, newdirfd, newpath, flags);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "renameat2");
     return orig_func(olddirfd, oldpath, newdirfd, newpath, flags);
 }
