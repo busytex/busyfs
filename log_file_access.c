@@ -1,8 +1,9 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
-//'access', 'lstat', 'fstat', 'stat', 'open', 'read', 'unlink', 'mmap',  
-// 'readv', 'close', 'lseek', 'writev', 'fcntl', 'munmap', 'arch_prctl', 'brk', 'execve', 'exit_group', 'getcwd', 'getdents64', 'ioctl', 'rt_sigaction', 'rt_sigprocmask', 'set_tid_address'
+// 'mmap', 'readv', 'close', 'writev', 'fcntl', 'munmap', 'arch_prctl', 'brk', 'execve', 'exit_group', 'getcwd', 'getdents64', 'ioctl', 'rt_sigaction', 'rt_sigprocmask', 'set_tid_address'
+// https://man7.org/linux/man-pages/man2/mmap.2.html
+// https://learningdaily.dev/reading-and-writing-files-using-memory-mapped-i-o-220fa802aa1c
 
 #ifdef LOGFILEACCESSDYNAMIC
 // gcc -shared -fPIC log_file_access.c -o log_file_access.so -ldl
@@ -118,13 +119,69 @@ int unlinkat(int dirfd, const char * pathname, int flags)
     return orig_func(dirfd, pathname, flags);
 }
 
-// https://man7.org/linux/man-pages/man2/mkdir.2.html
-// https://man7.org/linux/man-pages/man2/rmdir.2.html
-// https://man7.org/linux/man-pages/man2/rename.2.html
-// https://man7.org/linux/man-pages/man2/link.2.html
 
-// https://man7.org/linux/man-pages/man2/mmap.2.html
-// https://learningdaily.dev/reading-and-writing-files-using-memory-mapped-i-o-220fa802aa1c
+int link(const char * oldpath, const char * newpath)
+{
+    typedef int (*orig_func_type)(const char * oldpath, const char * newpath);
+    fprintf(stderr, "log_file_access_preload: link(\"%s\", \"%s\")\n", oldpath, newpath);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "link");
+    return orig_func(oldpath, newpath);
+}
+int linkat(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags);
+{
+    typedef int (*orig_func_type)(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags);
+    fprintf(stderr, "log_file_access_preload: linkat(%d, \"%s\", %d, \"%s\", %d)\n", olddirfd, oldpath, newdirfd, newpath, flags);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "linkat");
+    return orig_func(olddirfd, oldpath, newdirfd, newpath, flags);
+}
+
+
+int rename(const char * oldpath, const char * newpath)
+{
+    typedef int (*orig_func_type)(const char * oldpath, const char * newpath);
+    fprintf(stderr, "log_file_access_preload: rename(\"%s\", \"%s\")\n", oldpath, newpath);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "rename");
+    return orig_func(oldpath, newpath);
+}
+int renameat(int olddirfd, const char *oldpath, int newdirfd, const char *newpath);
+{
+    typedef int (*orig_func_type)(int olddirfd, const char *oldpath, int newdirfd, const char *newpath);
+    fprintf(stderr, "log_file_access_preload: renameat(%d, \"%s\", %d, \"%s\", %d)\n", olddirfd, oldpath, newdirfd, newpath);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "renameat");
+    return orig_func(olddirfd, oldpath, newdirfd, newpath);
+}
+int renameat2(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags);
+{
+    typedef int (*orig_func_type)(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags);
+    fprintf(stderr, "log_file_access_preload: renameat2(%d, \"%s\", %d, \"%s\", %d)\n", olddirfd, oldpath, newdirfd, newpath, flags);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "renameat2");
+    return orig_func(olddirfd, oldpath, newdirfd, newpath, flags);
+}
+
+
+int mkdir(const char *path, mode_t mode)
+{
+    typedef FILE* (*orig_fopen_func_type)(const char *path, mode_t mode);
+    fprintf(stderr, "log_file_access_preload: mkdir(\"%s\", %d)\n", path, (int)mode);
+    orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "mkdir");
+    return orig_func(path, mode);
+}
+int mkdirat(int dirfd, const char *path, mode_t mode)
+{
+    typedef FILE* (*orig_fopen_func_type)(int dirrfd, const char *path, mode_t mode);
+    fprintf(stderr, "log_file_access_preload: mkdirat(%d, \"%s\", %d)\n", dirfd, path, (int)mode);
+    orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "mkdirat");
+    return orig_func(difd, path, mode);
+}
+
+
+int rmdir(const char *path)
+{
+    typedef FILE* (*orig_fopen_func_type)(const char *path);
+    fprintf(stderr, "log_file_access_preload: rmdir(\"%s\")\n", path);
+    orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "rmdir");
+    return orig_func(path);
+}
 
 #endif
 
