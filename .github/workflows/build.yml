@@ -33,7 +33,7 @@ jobs:
             echo LOG_FILE_ACCESS
             LD_PRELOAD=$PWD/../log_file_access.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
             echo STRACE
-            strace -f -e trace=file $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            strace -f -e trace=file               $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
             #LD_PRELOAD=$PWD/../log_file_access.so $BUSYTEX bibtex8 --8bit example.aux
             #LD_PRELOAD=$PWD/../log_file_access.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
             #LD_PRELOAD=$PWD/../log_file_access.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
