@@ -102,7 +102,29 @@ int newfstatat(int dirfd, const char *restrict pathname, struct stat *restrict s
     return orig_func(dirfd, pathname, statbuf, flags);
 }
 
-// 'unlink', 'mmap', 'rename', 'link', 'rmdir', 'mkdir'
+
+int unlink(const char * pathname)
+{
+    typedef int (*orig_func_type)(const char * pathname);
+    fprintf(stderr, "log_file_access_preload: unlink(\"%s\")\n", pathname);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "unlink");
+    return orig_func(pathname);
+}
+int unlinkat(int dirfd, const char * pathname, int flags)
+{
+    typedef int (*orig_func_type)(int dirfd, const char * pathname, int flags);
+    fprintf(stderr, "log_file_access_preload: unlinkat(%d, \"%s\", %d)\n", dirfd, pathname, flags);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "unlinkat");
+    return orig_func(dirfd, pathname, flags);
+}
+
+// https://man7.org/linux/man-pages/man2/mkdir.2.html
+// https://man7.org/linux/man-pages/man2/rmdir.2.html
+// https://man7.org/linux/man-pages/man2/rename.2.html
+// https://man7.org/linux/man-pages/man2/link.2.html
+
+// https://man7.org/linux/man-pages/man2/mmap.2.html
+// https://learningdaily.dev/reading-and-writing-files-using-memory-mapped-i-o-220fa802aa1c
 
 #endif
 
