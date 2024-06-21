@@ -127,7 +127,7 @@ int link(const char * oldpath, const char * newpath)
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "link");
     return orig_func(oldpath, newpath);
 }
-int linkat(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags);
+int linkat(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags)
 {
     typedef int (*orig_func_type)(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags);
     fprintf(stderr, "log_file_access_preload: linkat(%d, \"%s\", %d, \"%s\", %d)\n", olddirfd, oldpath, newdirfd, newpath, flags);
@@ -143,14 +143,14 @@ int rename(const char * oldpath, const char * newpath)
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "rename");
     return orig_func(oldpath, newpath);
 }
-int renameat(int olddirfd, const char *oldpath, int newdirfd, const char *newpath);
+int renameat(int olddirfd, const char *oldpath, int newdirfd, const char *newpath)
 {
     typedef int (*orig_func_type)(int olddirfd, const char *oldpath, int newdirfd, const char *newpath);
     fprintf(stderr, "log_file_access_preload: renameat(%d, \"%s\", %d, \"%s\", %d)\n", olddirfd, oldpath, newdirfd, newpath);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "renameat");
     return orig_func(olddirfd, oldpath, newdirfd, newpath);
 }
-int renameat2(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags);
+int renameat2(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags)
 {
     typedef int (*orig_func_type)(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags);
     fprintf(stderr, "log_file_access_preload: renameat2(%d, \"%s\", %d, \"%s\", %d)\n", olddirfd, oldpath, newdirfd, newpath, flags);
@@ -171,7 +171,7 @@ int mkdirat(int dirfd, const char *path, mode_t mode)
     typedef int (*orig_fopen_func_type)(int dirrfd, const char *path, mode_t mode);
     fprintf(stderr, "log_file_access_preload: mkdirat(%d, \"%s\", %d)\n", dirfd, path, (int)mode);
     orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "mkdirat");
-    return orig_func(difd, path, mode);
+    return orig_func(dirfd, path, mode);
 }
 
 
