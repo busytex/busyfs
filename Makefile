@@ -6,11 +6,11 @@ busybox:
 	-mkdir -p build && rm -rf build/*
 	tar -xf source/busybox.tar.bz2 --strip-components=1 --directory=build
 	cp .config build
-	$(CC) -DLOGFILEACCESSDYNAMIC -shared -fPIC log_file_access.c -o log_file_access.so -ldl
+	$(CC) -shared -fPIC log_file_access_dynamic.c -o log_file_access_dynamic.so -ldl
 	$(MAKE) -C build SKIP_STRIP=y
 
 busyfs.a:
-	$(CC) -o log_file_access_static.lo -c log_file_access_static.c -DLOGFILEACCESSSTATIC
+	$(CC) -o log_file_access_static.lo -c log_file_access_static.c
 	cp $(shell $(CC) -print-file-name=libc.a) libc.a
 	$(NM) libc.a
 	$(AR) x libc.a fopen.lo open.lo

@@ -7,7 +7,6 @@
 
 // override in fs: 'lstat', 'stat', 'access', 'fopen',
 
-#ifdef LOGFILEACCESSDYNAMIC
 // gcc -shared -fPIC log_file_access.c -o log_file_access.so -ldl
 
 #include <unistd.h>
@@ -184,5 +183,3 @@ int rmdir(const char *path)
     orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "rmdir");
     return orig_func(path);
 }
-
-#endif

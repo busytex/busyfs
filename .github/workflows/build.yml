@@ -31,20 +31,20 @@ jobs:
             export FONTCONFIG_PATH=$DIST
             cd example
             echo LOG_FILE_ACCESS
-            LD_PRELOAD=$PWD/../log_file_access.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
             echo STRACE
-            strace -f -e trace=file               $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-            #LD_PRELOAD=$PWD/../log_file_access.so $BUSYTEX bibtex8 --8bit example.aux
-            #LD_PRELOAD=$PWD/../log_file_access.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-            #LD_PRELOAD=$PWD/../log_file_access.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            strace -f -e trace=file                       $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            #LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX bibtex8 --8bit example.aux
+            #LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            #LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
             #ls example.pdf
-#            ls -lah log_file_access.so
-#            nm log_file_access.so
-#            LD_PRELOAD=$PWD/log_file_access.so /usr/bin/cat Makefile
+#            ls -lah log_file_access_dynamic.so
+#            nm log_file_access_dynamic.so
+#            LD_PRELOAD=$PWD/log_file_access_dynamic.so /usr/bin/cat Makefile
 #            nm -u ./build/busybox
-#            LD_PRELOAD=$PWD/log_file_access.so ./build/busybox cat Makefile
+#            LD_PRELOAD=$PWD/log_file_access_dynamic.so ./build/busybox cat Makefile
 #            strace -f ./build/busybox cat Makefile
-#            #LD_PRELOAD=log_file_access.so ./build/busybox ls
+#            #LD_PRELOAD=log_file_access_dynamic.so ./build/busybox ls
 #
 #      - uses: actions/upload-artifact@v4
 #        with:
