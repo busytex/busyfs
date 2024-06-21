@@ -146,7 +146,7 @@ int rename(const char * oldpath, const char * newpath)
 int renameat(int olddirfd, const char *oldpath, int newdirfd, const char *newpath)
 {
     typedef int (*orig_func_type)(int olddirfd, const char *oldpath, int newdirfd, const char *newpath);
-    fprintf(stderr, "log_file_access_preload: renameat(%d, \"%s\", %d, \"%s\", %d)\n", olddirfd, oldpath, newdirfd, newpath);
+    fprintf(stderr, "log_file_access_preload: renameat(%d, \"%s\", %d, \"%s\")\n", olddirfd, oldpath, newdirfd, newpath);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "renameat");
     return orig_func(olddirfd, oldpath, newdirfd, newpath);
 }
