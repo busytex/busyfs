@@ -10,13 +10,12 @@ busybox:
 	$(MAKE) -C build SKIP_STRIP=y
 
 busyfs.a:
-	$(CC) -o build/native/log_file_access.lo -c log_file_access.c -DLOGFILEACCESSSTATIC
-	cp $(shell $(CC) -print-file-name=libc.a) build/native/libc.a
-	$(NM) build/native/libc.a
-	$(AR) x build/native/libc.a fopen.lo open.lo
+	$(CC) -o log_file_access_static.lo -c log_file_access_static.c -DLOGFILEACCESSSTATIC
+	cp $(shell $(CC) -print-file-name=libc.a) libc.a
+	$(NM) libc.a
+	$(AR) x libc.a fopen.lo open.lo
 	$(OBJCOPY) --redefine-sym fopen=orig_fopen fopen.lo
-	$(OBJCOPY) --redefine-sym open=orig_open open.lo
-	$(AR) rs build/native/libc.a fopen.lo open.lo
-	$(AR) rbs aio.lo build/native/libc.a build/native/log_file_access.lo
-	$(NM) build/native/libc.a
-	
+	$(OBJCOPY) --redefine-sym open=orig_open    open.lo
+	$(AR) rs libc.a fopen.lo open.lo
+	$(AR) rbs aio.lo libc.a log_file_access_static.lo
+	$(NM) libc.a

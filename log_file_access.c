@@ -5,6 +5,8 @@
 // https://man7.org/linux/man-pages/man2/mmap.2.html
 // https://learningdaily.dev/reading-and-writing-files-using-memory-mapped-i-o-220fa802aa1c
 
+// override in fs: 'lstat', 'stat', 'access', 'fopen',
+
 #ifdef LOGFILEACCESSDYNAMIC
 // gcc -shared -fPIC log_file_access.c -o log_file_access.so -ldl
 
@@ -183,22 +185,4 @@ int rmdir(const char *path)
     return orig_func(path);
 }
 
-#endif
-
-
-
-
-#ifdef LOGFILEACCESSSTATIC
-FILE* orig_fopen(const char *path, const char *mode);
-FILE* fopen(const char *path, const char *mode)
-{
-    fprintf(stderr, "log_file_access: fopen(\"%s\", \"%s\")\n", path, mode);
-    return orig_fopen(path, mode);
-}
-int orig_open(const char *path, int mode);
-int open(const char *path, int mode)
-{
-    fprintf(stderr, "log_file_access: open(\"%s\", %d)\n", path, mode);
-    return orig_open(path, mode);
-}
 #endif
