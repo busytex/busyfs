@@ -51,4 +51,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: build
-          path: build
+          path: |
+            build/packfs.c
+          #path: build
