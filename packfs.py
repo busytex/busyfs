@@ -21,7 +21,7 @@ for (dirpath, dirnames, filenames) in os.walk(args.input_path):
         subprocess.check_call(['ld', '-r', '-b', 'binary', '-o', objects[-1], files[-1]])
 
 f = open(args.output_path, 'w')
-print('\n'.join('extern char _binary_{pp}_start[], _binary_{pp}_end[];' for p in objects for pp in [p.translate({ord('/') : '_', ord('.') : '_'})]), file = f)
+print('\n'.join(f'extern char _binary_{pp}_start[], _binary_{pp}_end[];' for p in objects for pp in [p.translate({ord('/') : '_', ord('.') : '_'})]), file = f)
 print('\nconst char* packfs_dirs[] = {\n' + ',\n'.join('"' + repr(p)[1:-1] + '"' for p in dirs) + '\n};\n\n', file = f)
 print('\nconst char* packfs_files[] = {\n' + ',\n'.join('"' + repr(p)[1:-1] + '"' for p in files) + '\n};\n\n', file = f)
 
