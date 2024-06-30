@@ -21,7 +21,7 @@ jobs:
             tar -xf texlive-basic.tar.gz
             cp -r build/texlive-basic dist-native/texlive
             cp build/texlive-basic/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt dist-native
-            python packfs.py -i build/texlive-basic > build/packfs.c
+            python packfs.py -i build/texlive-basic -o build/packfs.c
             cc -c build/packfs.c -o build/packfs.o
 
             #export DIST=$PWD/dist-native
