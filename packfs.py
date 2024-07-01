@@ -77,3 +77,5 @@ print('fwrite(buf, 1, cnt, stdout);\n', file = f)
 print('}\n', file = f)
 print('while(!feof(f) && !ferror(f));\n', file = f)
 print('return 0;}\n', file = f)
+
+# bool prefix(const char *pre, const char *str) { return strncmp(pre, str, strlen(pre)) == 0; }
