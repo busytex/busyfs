@@ -23,7 +23,7 @@ jobs:
             #cp dist-native/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt dist-native
             python packfs.py -i dist-native -o packfs.h
             cc -shared -fPIC packfs.c -o packfs.so -ldl @packfs.h.txt
-            cc -c log_file_access_dynamic_withoutfopen.c -o log_file_access_dynamic_withoutfopen.so
+            cc -shared -fPIC -c log_file_access_dynamic_withoutfopen.c -o log_file_access_dynamic_withoutfopen.so -ldl
             cc test.c
             LD_PRELOAD=$PWD/log_file_access_dynamic_wihtoutfopen.so ./a.out
 
