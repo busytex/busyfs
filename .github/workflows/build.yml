@@ -12,7 +12,7 @@ jobs:
           fetch-depth: 1
       
       - name: Build Busybox
-        run:  wget https://github.com/busytex/busyfs/releases/download/data/busytex https://github.com/busytex/busyfs/releases/download/data/texlive-basic.tar.gz && make -j2 busybox && ./build/busybox
+        run:  wget https://github.com/busytex/busyfs/releases/download/data/busytex https://github.com/busytex/busyfs/releases/download/data/texlive-basic.tar.gz && make -j2 busybox && ./build/busybox && cc -shared -fPIC log_file_access_dynamic.c -o log_file_access_dynamic.so -ldl
       
       - name: Test Busybox
         run: |
@@ -42,14 +42,14 @@ jobs:
             #LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
             #LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
             #ls example.pdf
-#            ls -lah log_file_access_dynamic.so
-#            nm log_file_access_dynamic.so
-#            LD_PRELOAD=$PWD/log_file_access_dynamic.so /usr/bin/cat Makefile
-#            nm -u ./build/busybox
-#            LD_PRELOAD=$PWD/log_file_access_dynamic.so ./build/busybox cat Makefile
-#            strace -f ./build/busybox cat Makefile
-#            #LD_PRELOAD=log_file_access_dynamic.so ./build/busybox ls
-#
+            #ls -lah log_file_access_dynamic.so
+            #nm log_file_access_dynamic.so
+            #LD_PRELOAD=$PWD/log_file_access_dynamic.so /usr/bin/cat Makefile
+            #nm -u ./build/busybox
+            #LD_PRELOAD=$PWD/log_file_access_dynamic.so ./build/busybox cat Makefile
+            #strace -f ./build/busybox cat Makefile
+            #LD_PRELOAD=log_file_access_dynamic.so ./build/busybox ls
+
       - uses: actions/upload-artifact@v4
         with:
           name: build
