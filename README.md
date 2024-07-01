@@ -29,6 +29,12 @@ wget https://raw.githubusercontent.com/coreutils/coreutils/master/src/cat.c
 - https://stackoverflow.com/questions/20124898/how-to-get-the-parameter-list-and-their-type-of-a-system-call
 - https://github.com/strace/strace/blob/master/src/linux/x86_64/syscallent.h
 - https://github.com/torvalds/linux/blob/master/include/linux/syscalls.h
+- http://devlib.symbian.slions.net/s3/GUID-A4ECB450-02DA-5E85-91AC-4C8BDE0B9B58.html
+- https://stackoverflow.com/questions/78694331/intercept-open-syscall-in-c-when-called-via-fopen
+- https://man7.org/linux/man-pages/man2/memfd_create.2.html
+- https://stackoverflow.com/questions/55704758/is-there-anything-like-shm-open-without-filename
+- https://www.reddit.com/r/kernel/comments/7wma5q/simulating_memfd_create_in_26/
+
 
 # Useful ones
 - https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c
