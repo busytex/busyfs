@@ -21,6 +21,7 @@ for (dirpath, dirnames, filenames) in os.walk(args.input_path):
         subprocess.check_call(['ld', '-r', '-b', 'binary', '-o', objects[-1], files[-1]])
 
 translate = {ord('/') : '_', ord('.') : '_', ord('-') : '_'}
+# problem: can produce the same symbol name because of this mapping
 
 f = open(args.output_path, 'w')
 print('#include <string.h>', file = f)
@@ -39,7 +40,7 @@ print('\nconst char* packfsdirs[] = {\n' + ',\n'.join('"' + repr(p)[1:-1] + '"' 
 
 print('int main(int argc, char* argv[]) {\n', file = f)
 print('if(argc < 2) return 1; \n', file = f)
-print('for(int i = 0; i < num_files; i++) if(0 == strcmp(argv[1], packfsfiles[i].path)) printf("%.*s", int(packfsfiles[i].end - packfsfiles[i].start), int(packfsfiles[i].end - packfsfiles[i].start), packfsfiles[i].start);', file = f)
+print('for(int i = 0; i < packfsfilesnum; i++) if(0 == strcmp(argv[1], packfsfiles[i].path)) printf("%.*s", int(packfsfiles[i].end - packfsfiles[i].start), int(packfsfiles[i].end - packfsfiles[i].start), packfsfiles[i].start);', file = f)
 print('\n}', file = f)
 
 g = open(args.output_path + '.txt', 'w')

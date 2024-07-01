@@ -23,6 +23,7 @@ jobs:
             cp build/texlive-basic/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt dist-native
             python packfs.py -i build/texlive-basic -o build/packfs.c
             cc build/packfs.c -o build/packfs @build/packfs.c.txt || true
+            ./build/packfs build/texlive-basic/LICENSE.CTAN
 
             #export DIST=$PWD/dist-native
             #export PDFLATEXFMT=$DIST/pdflatex.fmt
