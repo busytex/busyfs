@@ -27,55 +27,57 @@ f = open(args.output_path + '.txt', 'w')
 print('\n'.join(objects), file = f)
 
 f = open(args.output_path, 'w')
-print('#define _GNU_SOURCE', file = f)
-print('#include <string.h>', file = f)
-print('#include <stdio.h>', file = f)
-print('#include <unistd.h>', file = f)
-print('#include <errno.h>', file = f)
-print('#include <dlfcn.h>', file = f)
-print('#include <sys/stat.h>', file = f)
+print(f'''
+#define _GNU_SOURCE
+#include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
+#include <dlfcn.h>
+#include <sys/stat.h>
+int packfsfilesnum = {len(files)}, packfsdirsnum  = {len(dirs)};
+''', file = f)
 
-print('int packfsfilesnum = ', len(files), ';', file = f)
-print('int packfsdirsnum  = ', len(dirs), ';', file = f)
 print('\n'.join(f'extern char _binary_{pp}_start[], _binary_{pp}_end[];' for p in files for pp in [p.translate(translate)]), file = f)
 print('struct packfsinfo { const char *path; const char* start; const char* end; } packfsinfos[] = {', file = f)
 for p in files:
     pp = p.translate(translate)
     print('{ "' + repr(p)[1:-1] + '", ', f'_binary_{pp}_start, ', f'_binary_{pp}_end ', '},', file = f)
 print('};', file = f)
-
 print('\nconst char* packfsdirs[] = {\n' + ',\n'.join('"' + repr(p)[1:-1] + '"' for p in dirs) + '\n};\n\n', file = f)
 #print('\nconst char* packfsfiles[] = {\n' + ',\n'.join('"' + repr(p)[1:-1] + '"' for p in files) + '\n};\n\n', file = f)
 
-print('FILE* fopen(const char *path, const char *mode) {', file = f)
-print('for(int i = 0; i < packfsfilesnum; i++) if(0 == strcmp(path, packfsinfos[i].path)) return fmemopen((void*)packfsinfos[i].start, (size_t)(packfsinfos[i].end - packfsinfos[i].start), mode);\n', file = f)
-print('typedef FILE* (*orig_fopen_func_type)(const char *path, const char *mode);', file = f)
-print('fprintf(stderr, "log_file_access_preload: fopen(\\"%s\\", \\"%s\\")\\n", path, mode);', file = f)
-print('orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "fopen");', file = f)
-print('return orig_func(path, mode); }', file = f)
+print('''
+FILE* fopen(const char *path, const char *mode) {
+for(int i = 0; i < packfsfilesnum; i++) if(0 == strcmp(path, packfsinfos[i].path)) return fmemopen((void*)packfsinfos[i].start, (size_t)(packfsinfos[i].end - packfsinfos[i].start), mode);
+typedef FILE* (*orig_fopen_func_type)(const char *path, const char *mode);
+fprintf(stderr, "log_file_access_preload: fopen(\\"%s\\", \\"%s\\")\\n", path, mode);
+orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "fopen");
+return orig_func(path, mode); }
 
-print('int access(const char *path, int flags) {', file = f)
-print('typedef int (*orig_func_type)(const char *pathname, int flags);', file = f)
-print('fprintf(stderr, "log_file_access_preload: access(\\"%s\\", %d)\\n", path, flags);', file = f)
-print('orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "access");', file = f)
-print('return orig_func(path, flags); }', file = f)
+int access(const char *path, int flags) {
+typedef int (*orig_func_type)(const char *pathname, int flags);
+fprintf(stderr, "log_file_access_preload: access(\\"%s\\", %d)\\n", path, flags);
+orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "access");
+return orig_func(path, flags); }
 
-print('int stat(const char *restrict pathname, struct stat *restrict statbuf) {', file = f)
-print('typedef int (*orig_func_type)(const char *restrict pathname, struct stat *restrict statbuf);', file = f)
-print('fprintf(stderr, "log_file_access_preload: stat(\\"%s\\", %p)\\n", pathname, (void*)statbuf);', file = f)
-print('orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "stat");', file = f)
-print('return orig_func(pathname, statbuf); }', file = f)
+int stat(const char *restrict pathname, struct stat *restrict statbuf) {
+typedef int (*orig_func_type)(const char *restrict pathname, struct stat *restrict statbuf);
+fprintf(stderr, "log_file_access_preload: stat(\\"%s\\", %p)\\n", pathname, (void*)statbuf);
+orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "stat");
+return orig_func(pathname, statbuf); }
 
-print('int main(int argc, char* argv[]) {\n', file = f)
-print('char buf[1024];\n', file = f)
-print('if(argc < 2) return 2;\n', file = f)
-print('FILE* f = fopen(argv[1], "r");\n', file = f)
-print('if(!f) return 1;\n', file = f)
-print('do {\n', file = f)
-print('size_t cnt = fread(buf, 1, sizeof(buf), f);\n', file = f)
-print('fwrite(buf, 1, cnt, stdout);\n', file = f)
-print('}\n', file = f)
-print('while(!feof(f) && !ferror(f));\n', file = f)
-print('return 0;}\n', file = f)
+int main(int argc, char* argv[]) {
+char buf[1024];
+if(argc < 2) return 2;
+FILE* f = fopen(argv[1], "r");
+if(!f) return 1;
+do {
+size_t cnt = fread(buf, 1, sizeof(buf), f);
+fwrite(buf, 1, cnt, stdout);
+}
+while(!feof(f) && !ferror(f));
+return 0;}
+''', file = f)
 
 # bool prefix(const char *pre, const char *str) { return strncmp(pre, str, strlen(pre)) == 0; }
