@@ -40,7 +40,7 @@ print('\nconst char* packfsdirs[] = {\n' + ',\n'.join('"' + repr(p)[1:-1] + '"' 
 
 print('int main(int argc, char* argv[]) {\n', file = f)
 print('if(argc < 2) return 1; \n', file = f)
-print('for(int i = 0; i < packfsfilesnum; i++) if(0 == strcmp(argv[1], packfsinfos[i].path)) {printf("%.*s", (int)(packfsinfos[i].end - packfsinfos[i].start), (int)(packfsinfos[i].end - packfsinfos[i].start), packfsinfos[i].start); return 0;}', file = f)
+print('for(int i = 0; i < packfsfilesnum; i++) if(0 == strcmp(argv[1], packfsinfos[i].path)) {printf("%*.*s", (int)(packfsinfos[i].end - packfsinfos[i].start), (int)(packfsinfos[i].end - packfsinfos[i].start), packfsinfos[i].start); return 0;}', file = f)
 print('\nreturn 2;\n}', file = f)
 
 g = open(args.output_path + '.txt', 'w')
