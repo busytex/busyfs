@@ -8,6 +8,7 @@
 
 #include "packfs.h"
 
+/*
 FILE* fopen(const char *path, const char *mode)
 {
     for(int i = 0; i < packfsfilesnum; i++)
@@ -23,6 +24,30 @@ FILE* fopen(const char *path, const char *mode)
     orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "fopen");
     return orig_func(path, mode); 
 }
+*/
+int open(const char *path, int flags)
+{
+    typedef int (*orig_func_type)(const char *pathname, int flags);
+    fprintf(stderr, "log_file_access_preload: open(\"%s\", %d)\n", path, flags);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "open");
+    return orig_func(path, flags);
+}
+int open64(const char *path, int flags)
+{
+    typedef int (*orig_func_type)(const char *pathname, int flags);
+    fprintf(stderr, "log_file_access_preload: open64(\"%s\", %d)\n", path, flags);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "open64");
+    return orig_func(path, flags);
+}
+//int openat(int dirfd, const char *path, int flags, mode_t mode)
+int openat(int dirfd, const char *path, int flags)
+{
+    typedef int (*orig_func_type)(int dirfd, const char *pathname, int flags);
+    fprintf(stderr, "log_file_access_preload: openat(%d, \"%s\", %d)\n", dirfd, path, flags);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "openat");
+    return orig_func(dirfd, path, flags);
+}
+
 
 int access(const char *path, int flags) 
 {
@@ -31,6 +56,7 @@ int access(const char *path, int flags)
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "access");
     return orig_func(path, flags); 
 }
+
 
 int stat(const char *restrict pathname, struct stat *restrict statbuf) 
 {

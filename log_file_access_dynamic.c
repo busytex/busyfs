@@ -44,6 +44,7 @@ int openat(int dirfd, const char *path, int flags)
     return orig_func(dirfd, path, flags);
 }
 
+
 int access(const char *path, int flags)
 {
     typedef int (*orig_func_type)(const char *pathname, int flags);
