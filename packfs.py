@@ -23,6 +23,8 @@ for (dirpath, dirnames, filenames) in os.walk(args.input_path):
 translate = {ord('/') : '_', ord('.') : '_', ord('-') : '_'}
 
 f = open(args.output_path, 'w')
+print('#include <string.h>', file = f)
+print('#include <stdio.h>', file = f)
 print('int packfsfilesnum = ', len(files), ';', file = f)
 print('int packfsdirsnum  = ', len(dirs), ';', file = f)
 print('\n'.join(f'extern char _binary_{pp}_start[], _binary_{pp}_end[];' for p in files for pp in [p.translate(translate)]), file = f)
@@ -34,3 +36,11 @@ print('};', file = f)
 
 print('\nconst char* packfsdirs[] = {\n' + ',\n'.join('"' + repr(p)[1:-1] + '"' for p in dirs) + '\n};\n\n', file = f)
 #print('\nconst char* packfsfiles[] = {\n' + ',\n'.join('"' + repr(p)[1:-1] + '"' for p in files) + '\n};\n\n', file = f)
+
+print('int main(int argc, char* argv[]) {\n', file = f)
+print('if(argc < 2) return 1; \n', file = f)
+print('for(int i = 0; i < num_files; i++) if(0 == strcmp(argv[1], packfsfiles[i].path)) printf("%.*s", int(packfsfiles[i].end - packfsfiles[i].start), int(packfsfiles[i].end - packfsfiles[i].start), packfsfiles[i].start);', file = f)
+print('\n}', file = f)
+
+g = open(args.output_path + '.txt', 'w')
+print('\n'.join(objects), file = g)
