@@ -48,7 +48,7 @@ print('\nconst char* packfsdirs[] = {\n' + ',\n'.join('"' + repr(p)[1:-1] + '"' 
 #print('\nconst char* packfsfiles[] = {\n' + ',\n'.join('"' + repr(p)[1:-1] + '"' for p in files) + '\n};\n\n', file = f)
 
 print('FILE* fopen(const char *path, const char *mode) {', file = f)
-print('for(int i = 0; i < packfsfilesnum; i++) if(0 == strcmp(argv[1], packfsinfos[i].path)) return fmemopen((void*)packfsinfos[i].start, (size_t)(packfsinfos[i].end - packfsinfos[i].start), mode);\n', file = f)
+print('for(int i = 0; i < packfsfilesnum; i++) if(0 == strcmp(path, packfsinfos[i].path)) return fmemopen((void*)packfsinfos[i].start, (size_t)(packfsinfos[i].end - packfsinfos[i].start), mode);\n', file = f)
 print('typedef FILE* (*orig_fopen_func_type)(const char *path, const char *mode);', file = f)
 print('fprintf(stderr, "log_file_access_preload: fopen(\\"%s\\", \\"%s\\")\\n", path, mode);', file = f)
 print('orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "fopen");', file = f)
