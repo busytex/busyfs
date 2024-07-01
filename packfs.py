@@ -29,7 +29,7 @@ print('\n'.join(f'extern char _binary_{pp}_start[], _binary_{pp}_end[];' for p i
 print('struct packfsinfo { const char *path; const char* start; const char* end; } packfsinfos[] = {', file = f)
 for p in files:
     pp = p.translate(translate)
-    print('{ "' + repr(p)[1:-1] + '"', f'_binary_{pp}_start,', f'_binary_{pp}_end', '},', file = f)
+    print('{ "' + repr(p)[1:-1] + '", ', f'_binary_{pp}_start, ', f'_binary_{pp}_end ', '},', file = f)
 print('};', file = f)
 
 print('\nconst char* packfsdirs[] = {\n' + ',\n'.join('"' + repr(p)[1:-1] + '"' for p in dirs) + '\n};\n\n', file = f)
