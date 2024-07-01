@@ -11,19 +11,19 @@
 FILE* fopen(const char *path, const char *mode) {
 for(int i = 0; i < packfsfilesnum; i++) if(0 == strcmp(path, packfsinfos[i].path)) return fmemopen((void*)packfsinfos[i].start, (size_t)(packfsinfos[i].end - packfsinfos[i].start), mode);
 typedef FILE* (*orig_fopen_func_type)(const char *path, const char *mode);
-fprintf(stderr, "log_file_access_preload: fopen(\\"%s\\", \\"%s\\")\\n", path, mode);
+fprintf(stderr, "log_file_access_preload: fopen(\"%s\", \"%s\")\n", path, mode);
 orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "fopen");
 return orig_func(path, mode); }
 
 int access(const char *path, int flags) {
 typedef int (*orig_func_type)(const char *pathname, int flags);
-fprintf(stderr, "log_file_access_preload: access(\\"%s\\", %d)\\n", path, flags);
+fprintf(stderr, "log_file_access_preload: access(\"%s\", %d)\n", path, flags);
 orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "access");
 return orig_func(path, flags); }
 
 int stat(const char *restrict pathname, struct stat *restrict statbuf) {
 typedef int (*orig_func_type)(const char *restrict pathname, struct stat *restrict statbuf);
-fprintf(stderr, "log_file_access_preload: stat(\\"%s\\", %p)\\n", pathname, (void*)statbuf);
+fprintf(stderr, "log_file_access_preload: stat(\"%s\", %p)\n", pathname, (void*)statbuf);
 orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "stat");
 return orig_func(pathname, statbuf); }
 
