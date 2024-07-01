@@ -24,21 +24,24 @@ jobs:
             python packfs.py -i build/texlive-basic -o packfs.h
             cc -shared -fPIC packfs.c -o packfs.so -ldl @packfs.h.txt
             LD_PRELOAD=$PWD/log_file_access_dynamic.so ./build/busybox cat build/texlive-basic/LICENSE.CTAN
-            strace -e trace=file,read,write -f ./build/busybox cat build/texlive-basic/LICENSE.CTAN
+            strace -e trace=file,read,write,close -f ./build/busybox cat build/texlive-basic/LICENSE.CTAN
             #LD_PRELOAD=$PWD/packfs.so ./build/busybox cat build/texlive-basic/LICENSE.CTAN
 
             #export DIST=$PWD/dist-native
-            #export PDFLATEXFMT=$DIST/pdflatex.fmt
-            #export BUSYTEX=$DIST/busytex
-            #export TEXMFDIST=$DIST/texlive/texmf-dist
-            #export TEXMFVAR=$DIST/texlive/texmf-dist/texmf-var
-            #export TEXMFCNF=$TEXMFDIST/web2c
-            #export FONTCONFIG_PATH=$DIST
-            #cd example
+            export DIST=dist-native
+            export PDFLATEXFMT=$DIST/pdflatex.fmt
+            export BUSYTEX=$DIST/busytex
+            export TEXMFDIST=$DIST/texlive/texmf-dist
+            export TEXMFVAR=$DIST/texlive/texmf-dist/texmf-var
+            export TEXMFCNF=$TEXMFDIST/web2c
+            export FONTCONFIG_PATH=$DIST
+            cd example
+            mv ../dist-native .
+            ln -s di
             #echo LOG_FILE_ACCESS
             #LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-            #echo STRACE
-            #strace -f -e trace=file                       $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            echo STRACE
+            strace -f -e trace=file,read,write,close      $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
             
             #LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX bibtex8 --8bit example.aux
             #LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
