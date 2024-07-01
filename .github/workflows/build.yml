@@ -24,7 +24,7 @@ jobs:
             python packfs.py -i build/texlive-basic -o packfs.h
             cc -shared -fPIC packfs.c -o packfs.so -ldl @packfs.h.txt
             mv build _build
-            LD_PRELOAD=$PWD/packfs.so ./build/busybox cat build/texlive-basic/LICENSE.CTAN
+            LD_PRELOAD=$PWD/packfs.so ./_build/busybox cat build/texlive-basic/LICENSE.CTAN
 
             #export DIST=$PWD/dist-native
             #export PDFLATEXFMT=$DIST/pdflatex.fmt
