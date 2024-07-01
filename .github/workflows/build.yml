@@ -21,9 +21,9 @@ jobs:
             tar -xf texlive-basic.tar.gz
             cp -r build/texlive-basic dist-native/texlive
             cp build/texlive-basic/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt dist-native
-            python packfs.py -i build/texlive-basic -o build/packfs.c
-            cc build/packfs.c -o build/packfs -ldl @build/packfs.c.txt
-            ./build/packfs build/texlive-basic/LICENSE.CTAN
+            python packfs.py -i build/texlive-basic -o packfs.h
+            cc -shared -fPIC packfs.c -o packfs.so -ldl @build/packfs.c.txt
+            LD_PRELOAD=$PWD/packfs.so ./build/busybox cat build/texlive-basic/LICENSE.CTAN
 
             #export DIST=$PWD/dist-native
             #export PDFLATEXFMT=$DIST/pdflatex.fmt
