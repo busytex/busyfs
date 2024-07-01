@@ -25,7 +25,7 @@ translate = {ord('/') : '_', ord('.') : '_', ord('-') : '_'}
 f = open(args.output_path, 'w')
 print('int packfsfilesnum = ', len(files), ';', file = f)
 print('int packfsdirsnum  = ', len(dirs), ';', file = f)
-print('\n'.join(f'extern char _binary_{pp}_start[], _binary_{pp}_end[];' for p in objects for pp in [p.translate(translate)]), file = f)
+print('\n'.join(f'extern char _binary_{pp}_start[], _binary_{pp}_end[];' for p in files for pp in [p.translate(translate)]), file = f)
 print('struct packfsinfo { const char *path; const char* start; const char* end; } packfsinfos[] = {', file = f)
 for p in files:
     pp = p.translate(translate)
