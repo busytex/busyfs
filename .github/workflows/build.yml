@@ -23,14 +23,10 @@ jobs:
             #cp dist-native/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt dist-native
             python packfs.py -i dist-native -o packfs.h
             cc -shared -fPIC packfs.c -o packfs.so -ldl @packfs.h.txt
-            cc -shared -fPIC -c log_file_access_dynamic_withoutfopen.c -o log_file_access_dynamic_withoutfopen.so -ldl
-            cc test.c
-            LD_PRELOAD=$PWD/log_file_access_dynamic_wihtoutfopen.so ./a.out
-
             
-            #LD_PRELOAD=$PWD/log_file_access_dynamic.so ./build/busybox cat dist-native/LICENSE.CTAN
-            #strace -e trace=file,read,write,close -f ./build/busybox cat dist-native/LICENSE.CTAN
-            #LD_PRELOAD=$PWD/packfs.so ./build/busybox cat build/texlive-basic/LICENSE.CTAN
+            LD_PRELOAD=$PWD/log_file_access_dynamic.so ./build/busybox cat dist-native/LICENSE.CTAN
+            strace -e trace=file,read,write,close -f ./build/busybox cat dist-native/LICENSE.CTAN
+            LD_PRELOAD=$PWD/packfs.so ./build/busybox cat build/texlive-basic/LICENSE.CTAN
 
             #export DIST=$PWD/dist-native
             #cd example

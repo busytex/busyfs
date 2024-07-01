@@ -8,7 +8,7 @@
 
 #include "packfs.h"
 
-/*
+
 FILE* fopen(const char *path, const char *mode)
 {
     for(int i = 0; i < packfsfilesnum; i++)
@@ -16,7 +16,9 @@ FILE* fopen(const char *path, const char *mode)
         if(0 == strcmp(path, packfsinfos[i].path))
         {
             fprintf(stderr, "log_file_access_fmemopen: fopen(\"%s\", \"%s\")\n", path, mode);
-            return fmemopen((void*)packfsinfos[i].start, (size_t)(packfsinfos[i].end - packfsinfos[i].start), mode);
+            FILE* stream = fmemopen((void*)packfsinfos[i].start, (size_t)(packfsinfos[i].end - packfsinfos[i].start), mode);
+            fprintd(stderr, "log_file_access_fmemopen: %d\n", stream._fileno);
+            return res;
         }
     }
     typedef FILE* (*orig_fopen_func_type)(const char *path, const char *mode);
@@ -24,7 +26,15 @@ FILE* fopen(const char *path, const char *mode)
     orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "fopen");
     return orig_func(path, mode); 
 }
-*/
+
+int fileno(FILE *stream)
+{
+    typedef int (*orig_func_type)(FILE* stream);
+    fprintf(stderr, "log_file_access_preload: fileno(%p)\n", (void*)stream);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "fileno");
+    return orig_func(stream);
+}
+
 int open(const char *path, int flags)
 {
     typedef int (*orig_func_type)(const char *pathname, int flags);
