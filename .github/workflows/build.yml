@@ -22,7 +22,7 @@ jobs:
             cp -r build/texlive-basic dist-native/texlive
             cp build/texlive-basic/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt dist-native
             python packfs.py -i build/texlive-basic -o packfs.h
-            cc -shared -fPIC packfs.c -o packfs.so -ldl @build/packfs.c.txt
+            cc -shared -fPIC packfs.c -o packfs.so -ldl @packfs.h.txt
             LD_PRELOAD=$PWD/packfs.so ./build/busybox cat build/texlive-basic/LICENSE.CTAN
 
             #export DIST=$PWD/dist-native
