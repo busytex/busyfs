@@ -24,7 +24,7 @@ jobs:
             python packfs.py -i build/texlive-basic -o packfs.h
             cc -shared -fPIC packfs.c -o packfs.so -ldl @packfs.h.txt
             LD_PRELOAD=$PWD/log_file_access_dynamic.so ./build/busybox cat build/texlive-basic/LICENSE.CTAN
-            strace -f ./build/busybox cat build/texlive-basic/LICENSE.CTAN
+            strace -e=file,read,write -f ./build/busybox cat build/texlive-basic/LICENSE.CTAN
             #LD_PRELOAD=$PWD/packfs.so ./build/busybox cat build/texlive-basic/LICENSE.CTAN
 
             #export DIST=$PWD/dist-native
@@ -57,5 +57,5 @@ jobs:
           name: build
           #path: build
           path: |
-            build/packfs.c
-            build/packfs.c.txt
+            packfs.c
+            packfs.c.txt
