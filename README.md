@@ -34,7 +34,7 @@ wget https://raw.githubusercontent.com/coreutils/coreutils/master/src/cat.c
 - https://man7.org/linux/man-pages/man2/memfd_create.2.html
 - https://stackoverflow.com/questions/55704758/is-there-anything-like-shm-open-without-filename
 - https://www.reddit.com/r/kernel/comments/7wma5q/simulating_memfd_create_in_26/
-
+- https://github.com/jart/cosmopolitan/blob/13b9ecd5379ee32448f9f05dbc1b7c5f7f68b72b/libc/runtime/zipos-open.c
 
 # Useful ones
 - https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c

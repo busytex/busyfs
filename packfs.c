@@ -8,9 +8,9 @@
 
 #include "packfs.h"
 
-
 FILE* fopen(const char *path, const char *mode)
 {
+    /*
     for(int i = 0; i < packfsfilesnum; i++)
     {
         if(0 == strcmp(path, packfsinfos[i].path))
@@ -21,6 +21,7 @@ FILE* fopen(const char *path, const char *mode)
             return stream;
         }
     }
+    */
     typedef FILE* (*orig_fopen_func_type)(const char *path, const char *mode);
     fprintf(stderr, "log_file_access_preload: fopen(\"%s\", \"%s\")\n", path, mode);
     orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "fopen");
