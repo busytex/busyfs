@@ -45,6 +45,15 @@ int openat(int dirfd, const char *path, int flags)
 }
 
 
+int fileno(FILE *stream)
+{
+    typedef int (*orig_func_type)(FILE* stream);
+    fprintf(stderr, "log_file_access_preload: fileno(%p)\n", (void*)stream);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "fileno");
+    return orig_func(stream);
+}
+
+
 int access(const char *path, int flags)
 {
     typedef int (*orig_func_type)(const char *pathname, int flags);
