@@ -10,7 +10,6 @@
 
 FILE* fopen(const char *path, const char *mode)
 {
-    /*
     for(int i = 0; i < packfsfilesnum; i++)
     {
         if(0 == strcmp(path, packfsinfos[i].path))
@@ -21,7 +20,7 @@ FILE* fopen(const char *path, const char *mode)
             return stream;
         }
     }
-    */
+    
     typedef FILE* (*orig_fopen_func_type)(const char *path, const char *mode);
     fprintf(stderr, "log_file_access_preload: fopen(\"%s\", \"%s\")\n", path, mode);
     orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "fopen");
@@ -30,10 +29,31 @@ FILE* fopen(const char *path, const char *mode)
 
 int fileno(FILE *stream)
 {
+    if(!stream) return -1;
+
     typedef int (*orig_func_type)(FILE* stream);
     fprintf(stderr, "log_file_access_preload: fileno(%p)\n", (void*)stream);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "fileno");
-    return orig_func(stream);
+    int res = orig_func(stream);
+    
+    if(res < 0)
+    {
+        char buf[1024];
+        sprintf(buf, "tmp%p.bin", stream);
+        const char path[] = "tmp.bin";
+        FILE* f = fopen(buf, "w+");
+        if(!f) return -1;
+        do
+        {
+            fwrite(buf, 1, fread(buf, 1, sizeof(buf), stream), f);
+        }
+        while(!feof(stream) && !ferror(stream));
+        fseek(f, 0, SEEK_SET);
+
+        res = orig_func(f);
+    }
+    
+    return res;
 }
 
 int open(const char *path, int flags)
