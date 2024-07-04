@@ -113,10 +113,12 @@ int access(const char *path, int flags)
 }
 
 
-int stat(const char *restrict pathname, struct stat *restrict statbuf) 
+int stat(const char *restrict pathname, struct stat *restrict statbuf)
 {
     typedef int (*orig_func_type)(const char *restrict pathname, struct stat *restrict statbuf);
     fprintf(stderr, "log_file_access_preload: stat(\"%s\", %p)\n", pathname, (void*)statbuf);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "stat");
-    return orig_func(pathname, statbuf); 
+    int res = orig_func(pathname, statbuf);
+    fprintf(stderr, "log_file_access_preload: stat(\"%s\", %p) == %d\n", pathname, (void*)statbuf, res);
+    return res;
 }
