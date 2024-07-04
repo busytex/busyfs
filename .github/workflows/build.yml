@@ -38,8 +38,8 @@ jobs:
             export TEXMFCNF=$TEXMFDIST/web2c
             export FONTCONFIG_PATH=$DIST
             ##echo LOG_FILE_ACCESS
-            ##LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-            LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex 
+            LD_PRELOAD=$PWD/../packfs.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            #LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex 
             #echo STRACE
             #strace -f -e trace=file,read,write,close      $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
             

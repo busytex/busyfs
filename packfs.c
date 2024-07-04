@@ -39,7 +39,7 @@ int fileno(FILE *stream)
     if(res < 0)
     {
         char buf[1024];
-        sprintf(buf, "tmp%p.bin", stream);
+        sprintf(buf, "tmp%p.bin", (void*)stream);
         const char path[] = "tmp.bin";
         FILE* f = fopen(buf, "w+");
         if(!f) return -1;
@@ -51,6 +51,7 @@ int fileno(FILE *stream)
         fseek(f, 0, SEEK_SET);
 
         res = orig_func(f);
+        fprintf(stderr, "log_file_access_preload: fileno(%p) -> %p\n", (void*)stream, (void*)f);
     }
     
     return res;
