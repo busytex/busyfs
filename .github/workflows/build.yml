@@ -16,8 +16,8 @@ jobs:
       
       - name: Test Busybox
         run: |
+            chmod +x busytex
             mkdir dist-native
-            mv busytex dist-native && chmod +x dist-native/busytex
             tar -xf texlive-basic.tar.gz
             mv build/texlive-basic dist-native/texlive
             python packfs.py -i dist-native -o packfs.h
@@ -32,12 +32,13 @@ jobs:
             mv ../dist-native .
             export DIST=dist-native
             export PDFLATEXFMT=$DIST/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt
-            export BUSYTEX=$DIST/busytex
+            export BUSYTEX=./busytex
             export TEXMFDIST=$DIST/texlive/texmf-dist
             export TEXMFVAR=$DIST/texlive/texmf-dist/texmf-var
             export TEXMFCNF=$TEXMFDIST/web2c
             export FONTCONFIG_PATH=$DIST
             ##echo LOG_FILE_ACCESS
+            ls $DIST
             LD_PRELOAD=$PWD/../packfs.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
             #LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex 
             #echo STRACE
