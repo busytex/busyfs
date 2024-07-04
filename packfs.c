@@ -17,7 +17,7 @@ FILE* fopen(const char *path, const char *mode)
         {
             fprintf(stderr, "log_file_access_fmemopen: fopen(\"%s\", \"%s\")\n", path, mode);
             FILE* stream = fmemopen((void*)packfsinfos[i].start, (size_t)(packfsinfos[i].end - packfsinfos[i].start), mode);
-            fprintf(stderr, "log_file_access_fmemopen: %d\n", stream->_fileno);
+            fprintf(stderr, "log_file_access_fmemopen: fopen(\"%s\", \"%s\") == %d\n", path, mode, stream->_fileno);
             return stream;
         }
     }
@@ -94,8 +94,12 @@ int access(const char *path, int flags)
         for(int i = 0; i < packfsfilesnum; i++)
         {
             if(0 == strcmp(path, packfsinfos[i].path))
+            {
+                fprintf(stderr, "log_file_access_preload: access(\"%s\", %d) == 0\n", path, flags);
                 return 0;
+            }
         }
+        fprintf(stderr, "log_file_access_preload: access(\"%s\", %d) == -1\n", path, flags);
         return -1;
     }
     
