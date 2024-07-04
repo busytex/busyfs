@@ -81,7 +81,7 @@ int openat(int dirfd, const char *path, int flags)
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "openat");
     int res = orig_func(dirfd, path, flags);
     fprintf(stderr, "log_file_access_preload: openat(%d, \"%s\", %d) == %d\n", dirfd, path, flags, res);
-    return res
+    return res;
 }
 
 
