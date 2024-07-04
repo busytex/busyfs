@@ -60,5 +60,6 @@ jobs:
           name: build
           #path: build
           path: |
-            packfs.c
+            packfs.h
             packfs.h.txt
+            example/example.pdf

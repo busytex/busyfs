@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <dlfcn.h>
 #include <sys/stat.h>
+#include <assert.h>
 
 #include "packfs.h"
 
@@ -40,7 +41,6 @@ int fileno(FILE *stream)
     {
         char buf[1024];
         sprintf(buf, "tmp%p.bin", (void*)stream);
-        const char path[] = "tmp.bin";
         FILE* f = fopen(buf, "w+");
         if(!f) return -1;
         do
@@ -86,6 +86,19 @@ int access(const char *path, int flags)
     typedef int (*orig_func_type)(const char *pathname, int flags);
     fprintf(stderr, "log_file_access_preload: access(\"%s\", %d)\n", path, flags);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "access");
+   
+    const char prefix[] = "dist-native/";
+    if(strcnmp(prefix, path, strlen(prefix)) == 0)
+    {
+        assert(flags == R_OK);
+        for(int i = 0; i < packfsfilesnum; i++)
+        {
+            if(0 == strcmp(path, packfsinfos[i].path))
+                return 0;
+        }
+        return -1;
+    }
+    
     return orig_func(path, flags); 
 }
 
@@ -97,5 +110,3 @@ int stat(const char *restrict pathname, struct stat *restrict statbuf)
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "stat");
     return orig_func(pathname, statbuf); 
 }
-
-//# bool prefix(const char *pre, const char *str) { return strncmp(pre, str, strlen(pre)) == 0; }
