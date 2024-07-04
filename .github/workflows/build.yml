@@ -21,7 +21,7 @@ jobs:
             tar -xf texlive-basic.tar.gz
             mv build/texlive-basic dist-native/texlive
             python packfs.py -i dist-native -o packfs.h
-            cc -shared -fPIC packfs.c -o packfs.so -ldl -lc @packfs.h.txt
+            cc -shared -fPIC packfs.c -o packfs.so -ldl @packfs.h.txt
             
             #LD_PRELOAD=$PWD/log_file_access_dynamic.so ./build/busybox cat dist-native/LICENSE.CTAN
             #strace -e trace=file,read,write,close -f ./build/busybox cat dist-native/LICENSE.CTAN

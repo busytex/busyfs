@@ -88,7 +88,7 @@ int access(const char *path, int flags)
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "access");
    
     const char prefix[] = "dist-native/";
-    if(strcnmp(prefix, path, strlen(prefix)) == 0)
+    if(strncmp(prefix, path, strlen(prefix)) == 0)
     {
         assert(flags == R_OK);
         for(int i = 0; i < packfsfilesnum; i++)
