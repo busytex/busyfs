@@ -37,6 +37,8 @@ int fileno(FILE *stream)
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "fileno");
     int res = orig_func(stream);
     
+    fprintf(stderr, "log_file_access_preload: fileno(%p) == %d\n", (void*)stream, res);
+    
     if(res < 0)
     {
         char buf[1024];
@@ -51,7 +53,7 @@ int fileno(FILE *stream)
         fseek(f, 0, SEEK_SET);
 
         res = orig_func(f);
-        fprintf(stderr, "log_file_access_preload: fileno(%p) -> %p\n", (void*)stream, (void*)f);
+        fprintf(stderr, "log_file_access_preload: Fileno(%p) -> %p\n", (void*)stream, (void*)f);
     }
     
     return res;
@@ -77,7 +79,9 @@ int openat(int dirfd, const char *path, int flags)
     typedef int (*orig_func_type)(int dirfd, const char *pathname, int flags);
     fprintf(stderr, "log_file_access_preload: openat(%d, \"%s\", %d)\n", dirfd, path, flags);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "openat");
-    return orig_func(dirfd, path, flags);
+    int res = orig_func(dirfd, path, flags);
+    fprintf(stderr, "log_file_access_preload: openat(%d, \"%s\", %d) == %d\n", dirfd, path, flags, res);
+    return res
 }
 
 
@@ -95,15 +99,17 @@ int access(const char *path, int flags)
         {
             if(0 == strcmp(path, packfsinfos[i].path))
             {
-                fprintf(stderr, "log_file_access_preload: access(\"%s\", %d) == 0\n", path, flags);
+                fprintf(stderr, "log_file_access_preload: Access(\"%s\", %d) == 0\n", path, flags);
                 return 0;
             }
         }
-        fprintf(stderr, "log_file_access_preload: access(\"%s\", %d) == -1\n", path, flags);
+        fprintf(stderr, "log_file_access_preload: Access(\"%s\", %d) == -1\n", path, flags);
         return -1;
     }
     
-    return orig_func(path, flags); 
+    int res = orig_func(path, flags); 
+    fprintf(stderr, "log_file_access_preload: access(\"%s\", %d) == %d\n", path, flags, res);
+    return res;
 }
 
 
