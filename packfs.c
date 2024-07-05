@@ -124,7 +124,7 @@ int stat(const char *restrict pathname, struct stat *restrict statbuf)
     {
         for(int i = 0; i < packfsfilesnum; i++)
         {
-            if(0 == strcmp(path, packfsinfos[i].path))
+            if(0 == strcmp(pathname, packfsinfos[i].path))
             {
                 *statbuf = (struct stat){0};
                 statbuf->st_size = (off_t)(packfsinfos[i].end - packfsinfos[i].start);
