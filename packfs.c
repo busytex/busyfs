@@ -122,12 +122,11 @@ int stat(const char *restrict pathname, struct stat *restrict statbuf)
     const char prefix[] = "dist-native/";
     if(strncmp(prefix, path, strlen(prefix)) == 0)
     {
-        assert(flags == R_OK);
         for(int i = 0; i < packfsfilesnum; i++)
         {
             if(0 == strcmp(path, packfsinfos[i].path))
             {
-                *statbuf = (struct statbuf){0};
+                *statbuf = (struct stat){0};
                 statbuf->st_size = (off_t)(packfsinfos[i].end - packfsinfos[i].start);
                 statbuf->st_mode = S_IRUSR | S_IRGRP | S_IROTH;
                 fprintf(stderr, "log_file_access_preload: Stat(\"%s\", %p) == 0\n", pathname, (void*)statbuf);
