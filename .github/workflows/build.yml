@@ -39,6 +39,7 @@ jobs:
             export FONTCONFIG_PATH=$DIST
             ##echo LOG_FILE_ACCESS
             ls $DIST
+            rm -rf $DIST
             LD_PRELOAD=$PWD/../packfs.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
             #LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex 
             #echo STRACE
