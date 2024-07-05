@@ -115,10 +115,29 @@ int access(const char *path, int flags)
 
 int stat(const char *restrict pathname, struct stat *restrict statbuf)
 {
-    // https://man7.org/linux/man-pages/man2/stat.2.html
     typedef int (*orig_func_type)(const char *restrict pathname, struct stat *restrict statbuf);
     fprintf(stderr, "log_file_access_preload: stat(\"%s\", %p)\n", pathname, (void*)statbuf);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "stat");
+    
+    const char prefix[] = "dist-native/";
+    if(strncmp(prefix, path, strlen(prefix)) == 0)
+    {
+        assert(flags == R_OK);
+        for(int i = 0; i < packfsfilesnum; i++)
+        {
+            if(0 == strcmp(path, packfsinfos[i].path))
+            {
+                *statbuf = (struct statbuf){0};
+                statbuf->st_size = (off_t)(packfsinfos[i].end - packfsinfos[i].start);
+                statbuf->st_mode = S_IRUSR | S_IRGRP | S_IROTH;
+                fprintf(stderr, "log_file_access_preload: Stat(\"%s\", %p) == 0\n", pathname, (void*)statbuf);
+                return 0;
+            }
+        }
+        fprintf(stderr, "log_file_access_preload: Stat(\"%s\", %p) == -1\n", pathname, (void*)statbuf);
+        return -1;
+    }
+
     int res = orig_func(pathname, statbuf);
     fprintf(stderr, "log_file_access_preload: stat(\"%s\", %p) == %d\n", pathname, (void*)statbuf, res);
     return res;
