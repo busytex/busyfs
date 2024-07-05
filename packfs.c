@@ -61,14 +61,14 @@ int fileno(FILE *stream)
 
 int open(const char *path, int flags)
 {
-    typedef int (*orig_func_type)(const char *pathname, int flags);
+    typedef int (*orig_func_type)(const char *path, int flags);
     fprintf(stderr, "log_file_access_preload: open(\"%s\", %d)\n", path, flags);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "open");
     return orig_func(path, flags);
 }
 int open64(const char *path, int flags)
 {
-    typedef int (*orig_func_type)(const char *pathname, int flags);
+    typedef int (*orig_func_type)(const char *path, int flags);
     fprintf(stderr, "log_file_access_preload: open64(\"%s\", %d)\n", path, flags);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "open64");
     return orig_func(path, flags);
@@ -76,7 +76,7 @@ int open64(const char *path, int flags)
 //int openat(int dirfd, const char *path, int flags, mode_t mode)
 int openat(int dirfd, const char *path, int flags)
 {
-    typedef int (*orig_func_type)(int dirfd, const char *pathname, int flags);
+    typedef int (*orig_func_type)(int dirfd, const char *path, int flags);
     fprintf(stderr, "log_file_access_preload: openat(%d, \"%s\", %d)\n", dirfd, path, flags);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "openat");
     int res = orig_func(dirfd, path, flags);
@@ -87,17 +87,21 @@ int openat(int dirfd, const char *path, int flags)
 
 int access(const char *path, int flags) 
 {
-    typedef int (*orig_func_type)(const char *pathname, int flags);
+    typedef int (*orig_func_type)(const char *path, int flags);
     fprintf(stderr, "log_file_access_preload: access(\"%s\", %d)\n", path, flags);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "access");
    
+    char* _path = path;
+    if(_path[0] == '.' && _path[1] == '/')
+        _path += 2;
+
     const char prefix[] = "dist-native/";
-    if(strncmp(prefix, path, strlen(prefix)) == 0)
+    if(strncmp(prefix, _path, strlen(prefix)) == 0)
     {
         assert(flags == R_OK);
         for(int i = 0; i < packfsfilesnum; i++)
         {
-            if(0 == strcmp(path, packfsinfos[i].path))
+            if(0 == strcmp(_path, packfsinfos[i].path))
             {
                 fprintf(stderr, "log_file_access_preload: Access(\"%s\", %d) == 0\n", path, flags);
                 return 0;
@@ -113,41 +117,45 @@ int access(const char *path, int flags)
 }
 
 
-int stat(const char *restrict pathname, struct stat *restrict statbuf)
+int stat(const char *restrict path, struct stat *restrict statbuf)
 {
-    typedef int (*orig_func_type)(const char *restrict pathname, struct stat *restrict statbuf);
-    fprintf(stderr, "log_file_access_preload: stat(\"%s\", %p)\n", pathname, (void*)statbuf);
+    typedef int (*orig_func_type)(const char *restrict path, struct stat *restrict statbuf);
+    fprintf(stderr, "log_file_access_preload: stat(\"%s\", %p)\n", path, (void*)statbuf);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "stat");
     
+    char* _path = path;
+    if(_path[0] == '.' && _path[1] == '/')
+        _path += 2;
+    
     const char prefix[] = "dist-native/";
-    if(strncmp(prefix, pathname, strlen(prefix)) == 0)
+    if(strncmp(prefix, path, strlen(prefix)) == 0)
     {
         for(int i = 0; i < packfsfilesnum; i++)
         {
-            if(0 == strcmp(pathname, packfsinfos[i].path))
+            if(0 == strcmp(_path, packfsinfos[i].path))
             {
                 *statbuf = (struct stat){0};
                 statbuf->st_size = (off_t)(packfsinfos[i].end - packfsinfos[i].start);
                 statbuf->st_mode = S_IFREG;
-                fprintf(stderr, "log_file_access_preload: Stat(\"%s\", %p) == 0\n", pathname, (void*)statbuf);
+                fprintf(stderr, "log_file_access_preload: Stat(\"%s\", %p) == 0\n", path, (void*)statbuf);
                 return 0;
             }
         }
         for(int i = 0; i < packfsdirsnum; i++)
         {
-            if(0 == strcmp(pathname, packfsdirs[i]))
+            if(0 == strcmp(_path, packfsdirs[i]))
             {
                 *statbuf = (struct stat){0};
                 statbuf->st_mode = S_IFDIR;
-                fprintf(stderr, "log_file_access_preload: Stat(\"%s\", %p) == 0\n", pathname, (void*)statbuf);
+                fprintf(stderr, "log_file_access_preload: Stat(\"%s\", %p) == 0\n", path, (void*)statbuf);
                 return 0;
             }
         }
-        fprintf(stderr, "log_file_access_preload: Stat(\"%s\", %p) == -1\n", pathname, (void*)statbuf);
+        fprintf(stderr, "log_file_access_preload: Stat(\"%s\", %p) == -1\n", path, (void*)statbuf);
         return -1;
     }
 
-    int res = orig_func(pathname, statbuf);
-    fprintf(stderr, "log_file_access_preload: stat(\"%s\", %p) == %d\n", pathname, (void*)statbuf, res);
+    int res = orig_func(path, statbuf);
+    fprintf(stderr, "log_file_access_preload: stat(\"%s\", %p) == %d\n", path, (void*)statbuf, res);
     return res;
 }
