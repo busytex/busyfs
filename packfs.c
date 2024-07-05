@@ -91,7 +91,7 @@ int access(const char *path, int flags)
     fprintf(stderr, "log_file_access_preload: access(\"%s\", %d)\n", path, flags);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "access");
    
-    char* _path = path;
+    char* _path = (char*)path;
     if(_path[0] == '.' && _path[1] == '/')
         _path += 2;
 
@@ -123,7 +123,7 @@ int stat(const char *restrict path, struct stat *restrict statbuf)
     fprintf(stderr, "log_file_access_preload: stat(\"%s\", %p)\n", path, (void*)statbuf);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "stat");
     
-    char* _path = path;
+    char* _path = (char*)path;
     if(_path[0] == '.' && _path[1] == '/')
         _path += 2;
     

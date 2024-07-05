@@ -45,9 +45,9 @@ jobs:
             #echo STRACE
             #strace -f -e trace=file,read,write,close      $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
             
-            LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX bibtex8 --8bit example.aux
-            LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-            LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            #LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX bibtex8 --8bit example.aux
+            #LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+            #LD_PRELOAD=$PWD/../log_file_access_dynamic.so $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
             #ls example.pdf
             #ls -lah log_file_access_dynamic.so
             #nm log_file_access_dynamic.so
