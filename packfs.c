@@ -128,7 +128,7 @@ int stat(const char *restrict path, struct stat *restrict statbuf)
         _path += 2;
     
     const char prefix[] = "dist-native/";
-    if(strncmp(prefix, path, strlen(prefix)) == 0)
+    if(strncmp(prefix, _path, strlen(prefix)) == 0)
     {
         for(int i = 0; i < packfsfilesnum; i++)
         {
