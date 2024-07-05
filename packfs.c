@@ -59,6 +59,7 @@ int fileno(FILE *stream)
     return res;
 }
 
+/*
 int open(const char *path, int flags)
 {
     typedef int (*orig_func_type)(const char *path, int flags);
@@ -83,7 +84,7 @@ int openat(int dirfd, const char *path, int flags)
     fprintf(stderr, "log_file_access_preload: openat(%d, \"%s\", %d) == %d\n", dirfd, path, flags, res);
     return res;
 }
-
+*/
 
 int access(const char *path, int flags) 
 {
