@@ -120,7 +120,7 @@ int stat(const char *restrict pathname, struct stat *restrict statbuf)
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "stat");
     
     const char prefix[] = "dist-native/";
-    if(strncmp(prefix, path, strlen(prefix)) == 0)
+    if(strncmp(prefix, pathname, strlen(prefix)) == 0)
     {
         for(int i = 0; i < packfsfilesnum; i++)
         {
