@@ -128,7 +128,17 @@ int stat(const char *restrict pathname, struct stat *restrict statbuf)
             {
                 *statbuf = (struct stat){0};
                 statbuf->st_size = (off_t)(packfsinfos[i].end - packfsinfos[i].start);
-                statbuf->st_mode = S_IRUSR | S_IRGRP | S_IROTH;
+                statbuf->st_mode = S_IFREG;
+                fprintf(stderr, "log_file_access_preload: Stat(\"%s\", %p) == 0\n", pathname, (void*)statbuf);
+                return 0;
+            }
+        }
+        for(int i = 0; i < packfsdirsnum; i++)
+        {
+            if(0 == strcmp(pathname, packfsdirs[i]))
+            {
+                *statbuf = (struct stat){0};
+                statbuf->st_mode = S_IFDIR;
                 fprintf(stderr, "log_file_access_preload: Stat(\"%s\", %p) == 0\n", pathname, (void*)statbuf);
                 return 0;
             }
