@@ -9,6 +9,10 @@
 
 #include "packfs.h"
 
+// TODO: impl open with temp unpack
+
+static const char packfs_prefix[] = "dist-native/";
+
 FILE* fopen(const char *path, const char *mode)
 {
     for(int i = 0; i < packfsfilesnum; i++)
@@ -33,8 +37,9 @@ int fileno(FILE *stream)
     if(!stream) return -1;
 
     typedef int (*orig_func_type)(FILE* stream);
-    fprintf(stderr, "log_file_access_preload: fileno(%p)\n", (void*)stream);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "fileno");
+    
+    fprintf(stderr, "log_file_access_preload: fileno(%p)\n", (void*)stream);
     int res = orig_func(stream);
     
     fprintf(stderr, "log_file_access_preload: fileno(%p) == %d\n", (void*)stream, res);
@@ -42,7 +47,7 @@ int fileno(FILE *stream)
     if(res < 0)
     {
         char buf[1024];
-        sprintf(buf, "tmp%p.bin", (void*)stream);
+        sprintf(buf, ".tmp_%p.bin", (void*)stream);
         FILE* f = fopen(buf, "w+");
         if(!f) return -1;
         do
@@ -59,14 +64,38 @@ int fileno(FILE *stream)
     return res;
 }
 
-/*
+
 int open(const char *path, int flags)
 {
     typedef int (*orig_func_type)(const char *path, int flags);
-    fprintf(stderr, "log_file_access_preload: open(\"%s\", %d)\n", path, flags);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "open");
-    return orig_func(path, flags);
+
+    if(strncmp(packfs_prefix, _path, strlen(packfs_prefix)) == 0)
+    {
+        for(int i = 0; i < packfsfilesnum; i++)
+        {
+            if(0 == strcmp(path, packfsinfos[i].path))
+            {
+                char buf[1024];
+                sprintf(buf, ".tmp_%s.bin", packfsinfos[i].safe_path);
+                FILE* f = fopen(buf, "w+");
+                fwrite(packfsinfos[i].start, 1, (size_t)(packfsinfos[i].end - packfsinfos[i].start), f);
+                fseek(f, 0, SEEK_SET);
+
+                int res = fileno(f);
+                fprintf(stderr, "log_file_access_preload: open(\"%s\", %d) == %d\n", path, flags, res);
+                return res;
+            }
+        }
+        return -1;
+    }
+    
+    int res = orig_func(path, flags);
+    fprintf(stderr, "log_file_access_preload: open(\"%s\", %d) == %d\n", path, flags, res);
+    return res;
 }
+
+/*
 int open64(const char *path, int flags)
 {
     typedef int (*orig_func_type)(const char *path, int flags);
@@ -89,15 +118,14 @@ int openat(int dirfd, const char *path, int flags)
 int access(const char *path, int flags) 
 {
     typedef int (*orig_func_type)(const char *path, int flags);
-    fprintf(stderr, "log_file_access_preload: access(\"%s\", %d)\n", path, flags);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "access");
+    fprintf(stderr, "log_file_access_preload: access(\"%s\", %d)\n", path, flags);
    
     char* _path = (char*)path;
     if(_path[0] == '.' && _path[1] == '/')
         _path += 2;
 
-    const char prefix[] = "dist-native/";
-    if(strncmp(prefix, _path, strlen(prefix)) == 0)
+    if(strncmp(packfs_prefix, _path, strlen(packfs_prefix)) == 0)
     {
         assert(flags == R_OK);
         for(int i = 0; i < packfsfilesnum; i++)
@@ -128,8 +156,7 @@ int stat(const char *restrict path, struct stat *restrict statbuf)
     if(_path[0] == '.' && _path[1] == '/')
         _path += 2;
     
-    const char prefix[] = "dist-native/";
-    if(strncmp(prefix, _path, strlen(prefix)) == 0)
+    if(strncmp(packfs_prefix, _path, strlen(packfs_prefix)) == 0)
     {
         for(int i = 0; i < packfsfilesnum; i++)
         {
