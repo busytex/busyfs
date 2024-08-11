@@ -21,7 +21,7 @@ FILE* fopen(const char *path, const char *mode)
         {
             fprintf(stderr, "log_file_access_fmemopen: fopen(\"%s\", \"%s\")\n", path, mode);
             FILE* stream = fmemopen((void*)packfsinfos[i].start, (size_t)(packfsinfos[i].end - packfsinfos[i].start), mode);
-            fprintf(stderr, "log_file_access_fmemopen: fopen(\"%s\", \"%s\") == %d\n", path, mode, stream->_fileno);
+            fprintf(stderr, "log_file_access_fmemopen: fopen(\"%s\", \"%s\") == %d\n", path, mode, -1);
             return stream;
         }
     }
@@ -70,11 +70,15 @@ int open(const char *path, int flags)
     typedef int (*orig_func_type)(const char *path, int flags);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "open");
 
+    char* _path = (char*)path;
+    if(strlen(path) > 2 && _path[0] == '.' && _path[1] == '/')
+        _path += 2;
+
     if(strncmp(packfs_prefix, _path, strlen(packfs_prefix)) == 0)
     {
         for(int i = 0; i < packfsfilesnum; i++)
         {
-            if(0 == strcmp(path, packfsinfos[i].path))
+            if(0 == strcmp(_path, packfsinfos[i].path))
             {
                 char buf[1024];
                 sprintf(buf, ".tmp_%s.bin", packfsinfos[i].safe_path);
@@ -122,7 +126,7 @@ int access(const char *path, int flags)
     fprintf(stderr, "log_file_access_preload: access(\"%s\", %d)\n", path, flags);
    
     char* _path = (char*)path;
-    if(_path[0] == '.' && _path[1] == '/')
+    if(strlen(path) > 2 && _path[0] == '.' && _path[1] == '/')
         _path += 2;
 
     if(strncmp(packfs_prefix, _path, strlen(packfs_prefix)) == 0)
@@ -153,7 +157,7 @@ int stat(const char *restrict path, struct stat *restrict statbuf)
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "stat");
     
     char* _path = (char*)path;
-    if(_path[0] == '.' && _path[1] == '/')
+    if(strlen(path) > 2 && _path[0] == '.' && _path[1] == '/')
         _path += 2;
     
     if(strncmp(packfs_prefix, _path, strlen(packfs_prefix)) == 0)
