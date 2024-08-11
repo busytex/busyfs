@@ -35,9 +35,11 @@ wget https://raw.githubusercontent.com/coreutils/coreutils/master/src/cat.c
 - https://stackoverflow.com/questions/55704758/is-there-anything-like-shm-open-without-filename
 - https://www.reddit.com/r/kernel/comments/7wma5q/simulating_memfd_create_in_26/
 - https://github.com/jart/cosmopolitan/blob/13b9ecd5379ee32448f9f05dbc1b7c5f7f68b72b/libc/runtime/zipos-open.c
+- https://github.com/guardianproject/libsqlfs
 
 # Useful ones
 - https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c
+- https://git.musl-libc.org/cgit/musl/tree/src/stdio/fmemopen.c
 
 # Syscalls
 ```
@@ -74,15 +76,12 @@ asmlinkage long sys_openat2(int dfd, const char __user *filename,
 asmlinkage long sys_readlinkat(int dfd, const char __user *path, char __user *buf,
 asmlinkage long sys_newfstatat(int dfd, const char __user *filename,
 asmlinkage long sys_fstatat64(int dfd, const char __user *filename,
-asmlinkage long sys_utimensat(int dfd, const char __user *filename,
-                                const char __user *filename,
-asmlinkage long sys_execve(const char __user *filename,
-                                  const char  __user *pathname);
+asmlinkage long sys_utimensat(int dfd, const char __user *filename, const char __user *filename,
+asmlinkage long sys_execve(const char __user *filename, const char  __user *pathname);
 asmlinkage long sys_execveat(int dfd, const char __user *filename,
 asmlinkage long sys_statx(int dfd, const char __user *path, unsigned flags,
 asmlinkage long sys_open_tree(int dfd, const char __user *path, unsigned flags);
-asmlinkage long sys_move_mount(int from_dfd, const char __user *from_path,
-                               int to_dfd, const char __user *to_path,
+asmlinkage long sys_move_mount(int from_dfd, const char __user *from_path, int to_dfd, const char __user *to_path,
 asmlinkage long sys_mount_setattr(int dfd, const char __user *path,
 asmlinkage long sys_fspick(int dfd, const char __user *path, unsigned int flags);
 asmlinkage long sys_open(const char __user *filename,
@@ -100,8 +99,7 @@ asmlinkage long sys_newstat(const char __user *filename,
 asmlinkage long sys_newlstat(const char __user *filename,
 asmlinkage long sys_utime(char __user *filename,
 asmlinkage long sys_utimes(char __user *filename,
-asmlinkage long sys_futimesat(int dfd, const char __user *filename,
-                                     const char __user *filename,
+asmlinkage long sys_futimesat(int dfd, const char __user *filename, const char __user *filename,
 asmlinkage long sys_utime32(const char __user *filename,
 asmlinkage long sys_utimes_time32(const char __user *filename,
 asmlinkage long sys_creat(const char __user *pathname, umode_t mode);
@@ -112,12 +110,9 @@ asmlinkage long sys_lstat(const char __user *filename,
 asmlinkage long sys_readlink(const char __user *path,
 extern int do_fchownat(int dfd, const char __user *filename, uid_t user,
 static inline long ksys_chown(const char __user *filename, uid_t user,
-        return do_fchownat(AT_FDCWD, filename, user, group, 0);
 static inline long ksys_lchown(const char __user *filename, uid_t user,
-        return do_fchownat(AT_FDCWD, filename, user, group,
 extern long do_sys_truncate(const char __user *pathname, loff_t length);
 static inline long ksys_truncate(const char __user *pathname, loff_t length)
-        return do_sys_truncate(pathname, length);
 ```
 
 # More
