@@ -10,7 +10,7 @@ args = parser.parse_args()
 assert os.path.exists(args.input_path) and os.path.isdir(args.input_path)
 
 objects, files, dirs = [], [], []
-for (dirpath, dirnames, filenames) in os.walk(args.input_path):
+for (dirpath, dirnames, filenames) in list(os.walk(args.input_path)):
     dirs.extend(os.path.join(dirpath, dirname) for dirname in dirnames)
     for basename in filenames:
         if basename.endswith('.o'):
