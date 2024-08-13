@@ -1,4 +1,9 @@
 ```shell
+#python packfs.py -i dist-native -o packfs.h
+cc -shared -fPIC packfs.c -o packfs.so -ldl # @packfs.h.txt
+```
+
+```shell
 wget https://raw.githubusercontent.com/coreutils/coreutils/master/src/ls.c
 wget https://raw.githubusercontent.com/coreutils/coreutils/master/src/cat.c
 ```
@@ -36,6 +41,7 @@ wget https://raw.githubusercontent.com/coreutils/coreutils/master/src/cat.c
 - https://www.reddit.com/r/kernel/comments/7wma5q/simulating_memfd_create_in_26/
 - https://github.com/jart/cosmopolitan/blob/13b9ecd5379ee32448f9f05dbc1b7c5f7f68b72b/libc/runtime/zipos-open.c
 - https://github.com/guardianproject/libsqlfs
+- https://nanovms.com/dev/tutorials/introducing-memfd_create-anonymous-files-for-nanos-unikernel
 
 # Useful ones
 - https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c
@@ -47,6 +53,8 @@ wget https://raw.githubusercontent.com/coreutils/coreutils/master/src/cat.c
 - https://0x00sec.org/t/super-stealthy-droppers/3715
 - https://0x00sec.org/t/running-binaries-without-leaving-tracks/2166
 - https://hackage.haskell.org/package/memfd
+- https://github.com/a-darwish/memfd-examples
+- https://github.com/m1m1x/memdlopen/blob/master/main.c
  
 
 # Syscalls
