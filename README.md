@@ -46,6 +46,7 @@ wget https://raw.githubusercontent.com/coreutils/coreutils/master/src/cat.c
 # Useful ones
 - https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c
 - https://git.musl-libc.org/cgit/musl/tree/src/stdio/fmemopen.c
+- https://docs.kernel.org/filesystems/files.html
 - https://stackoverflow.com/questions/5053664/dlopen-from-memory
 - https://github.com/m1m1x/memdlopen
 - https://sourceware.org/bugzilla/show_bug.cgi?id=11767
