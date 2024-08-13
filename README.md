@@ -40,6 +40,14 @@ wget https://raw.githubusercontent.com/coreutils/coreutils/master/src/cat.c
 # Useful ones
 - https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c
 - https://git.musl-libc.org/cgit/musl/tree/src/stdio/fmemopen.c
+- https://stackoverflow.com/questions/5053664/dlopen-from-memory
+- https://github.com/m1m1x/memdlopen
+- https://sourceware.org/bugzilla/show_bug.cgi?id=11767
+- https://sourceware.org/bugzilla/show_bug.cgi?id=30100
+- https://0x00sec.org/t/super-stealthy-droppers/3715
+- https://0x00sec.org/t/running-binaries-without-leaving-tracks/2166
+- https://hackage.haskell.org/package/memfd
+ 
 
 # Syscalls
 ```
