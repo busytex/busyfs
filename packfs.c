@@ -14,9 +14,9 @@
 // TODO: impl open with temp unpack
 // TODO: impl these funcs via fmemopen
 
-static const char packfs_prefix[] = "dist-native/";
+#define packfs_prefix "dist-native/"
+#define packfs_filecnt_max  128
 
-static const int packfs_filecnt_max = 128;
 int packfs_filecnt = 0;
 int packfs_fds[packfs_filecnt_max];
 FILE* packfs_str[packfs_filecnt_max];
@@ -26,7 +26,7 @@ int packfs_open(char* path)
     return 0;
 }
 
-int packfs_mirror(FILE* stream, void* start, void* end)
+int packfs_mirror(FILE* stream, const char* start, const char* end)
 {
     int res = -1;
     if(stream == NULL)
