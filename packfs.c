@@ -72,6 +72,26 @@ int packfs_close(int fd)
     return -1;
 }
 
+FILE* packfs_findptr(int fd)
+{
+    for(int k = 0; k < packfs_filefd_max - packfs_filefd_min; k++)
+    {
+        if(packfs_filefd[k] == fd)
+            return packfs_fileptr[k];
+    }
+    return NULL;
+}
+
+int packfs_findfd(FILE* ptr)
+{
+    for(int k = 0; k < packfs_filefd_max - packfs_filefd_min; k++)
+    {
+        if(packfs_fileptr[k] == ptr)
+            return packfs_filefd[k];
+    }
+    return -1;
+}
+
 int packfs_mirror(FILE* stream, const char* start, const char* end)
 {
     int res = -1;
@@ -137,7 +157,7 @@ int fileno(FILE *stream)
     
     if(res < 0)
     {        
-        res = packfs_mirror(stream, NULL, NULL);
+        res = packfs_findfd(stream);
         fprintf(stderr, "packfs: Fileno(%p) == %d\n", (void*)stream, res);
     }
     
@@ -157,6 +177,12 @@ int open(const char *path, int flags)
     fprintf(stderr, "packfs: open(\"%s\", %d) == %d\n", path, flags, res);
     return res;
 }
+
+//ssize_t read(int fd, void buf[.count], size_t count); // https://en.cppreference.com/w/c/io/fread
+
+//off_t lseek(int fd, off_t offset, int whence); // https://en.cppreference.com/w/c/io/fseek
+
+// https://en.cppreference.com/w/cpp/io/c
 
 int access(const char *path, int flags) 
 {
