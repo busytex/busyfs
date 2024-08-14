@@ -1,5 +1,9 @@
 URL_busybox ?= https://busybox.net/downloads/busybox-1.33.0.tar.bz2
 
+packfs.so:
+	$(CC) -shared -fPIC packfs.c -o packfs.so -ldl # @packfs.h.txt
+    
+
 busybox:
 	mkdir -p source
 	wget -nc "$(URL_busybox)" -O source/$@.tar.bz2
