@@ -40,7 +40,7 @@ int packfs_open(const char* path, FILE** out)
             {
                 if(packfs_filefd[k] == 0)
                 {
-                    packfs_filefd[k] = packfs_filefd_min + i;
+                    packfs_filefd[k] = packfs_filefd_min + k;
                     packfs_fileptr[k] = res;
                     if(out != NULL)
                         *out = packfs_fileptr[k];
