@@ -6,7 +6,6 @@
 #include <dlfcn.h>
 #include <assert.h>
 #include <sys/stat.h>
-//#include <sys/memfd.h>
 #include <sys/mman.h>
 
 #include "packfs.h"
@@ -15,15 +14,62 @@
 // TODO: impl these funcs via fmemopen
 
 #define packfs_prefix "dist-native/"
-#define packfs_filecnt_max  128
+#define packfs_filefd_min 1000000000
+#define packfs_filefd_max 1000001000
+#define packfs_filefd_cnt (packfs_filefd_max - packfs_filefd_min)
 
-int packfs_filecnt = 0;
-int packfs_fds[packfs_filecnt_max];
-FILE* packfs_str[packfs_filecnt_max];
+int packfs_filecnt;
+int packfs_filefd[packfs_filefd_cnt];
+FILE* packfs_fileptr[packfs_filefd_cnt];
 
-int packfs_open(char* path)
+int packfs_open(char* path, FILE** out)
 {
-    return 0;
+    char* _path = (char*)path;
+    if(strlen(path) > 2 && _path[0] == '.' && _path[1] == '/')
+        _path += 2;
+    
+    if(strncmp(packfs_prefix, _path, strlen(packfs_prefix)) != 0)
+        return -1
+
+    for(int i = 0; i < packfsfilesnum; i++)
+    {
+        if(0 == strcmp(_path, packfsinfos[i].path))
+        {
+            FILE* res = fmemopen((void*)packfsinfos[i].start, (size_t)(packfsinfos[i].end - packfsinfos[i].start), mode);
+            
+            for(int k = 0; k < packfs_filefd_max - packfs_filefd_min; k++)
+            {
+                if(packfs_filefd[k] == 0)
+                {
+                    packfs_filefd[k] = packfs_filefd_min + i;
+                    packfs_fileptr[k] = res;
+                    if(out ! = NULL)
+                        *out = packfs_fileptr[k];
+                    return packfs_filefd[k];
+                }
+            }
+        }
+    }
+
+    return -1;
+}
+
+int packfs_close(int fd)
+{
+    if(fd < packfs_filefd_min || fd >= packfs_filefd_max)
+        return -1;
+
+    for(int k = 0; k < packfs_filefd_max - packfs_filefd_min; k++)
+    {
+        if(packfs_filefd[k] == fd)
+        {
+            packfs_filefd[k] = 0;
+            fclose(packfs_fileptr[k]);
+            packfs_fileptr[k] = NULL;
+            return 0;
+        }
+    }
+    return -1;
 }
 
 int packfs_mirror(FILE* stream, const char* start, const char* end)
@@ -68,16 +114,12 @@ FILE* fopen(const char *path, const char *mode)
     orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "fopen");
     
     FILE* res = NULL;
-    for(int i = 0; i < packfsfilesnum; i++)
+    if(packfs_open(path, &res) >= 0)
     {
-        if(0 == strcmp(path, packfsinfos[i].path))
-        {
-            FILE* res = fmemopen((void*)packfsinfos[i].start, (size_t)(packfsinfos[i].end - packfsinfos[i].start), mode);
-            fprintf(stderr, "packfs: Fopen(\"%s\", \"%s\") == %p\n", path, mode, (void*)res);
-            return res;
-        }
+        fprintf(stderr, "packfs: Fopen(\"%s\", \"%s\") == %p\n", path, mode, (void*)res);
+        return res;
     }
-    
+
     res = orig_func(path, mode);
     fprintf(stderr, "packfs: fopen(\"%s\", \"%s\") == %p\n", path, mode, (void*)res);
     return res;
@@ -107,22 +149,9 @@ int open(const char *path, int flags)
     typedef int (*orig_func_type)(const char *path, int flags);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "open");
 
-    char* _path = (char*)path;
-    if(strlen(path) > 2 && _path[0] == '.' && _path[1] == '/')
-        _path += 2;
-
-    int res = -1;
-    if(strncmp(packfs_prefix, _path, strlen(packfs_prefix)) == 0)
-    {
-        for(int i = 0; i < packfsfilesnum; i++)
-        {
-            if(0 == strcmp(_path, packfsinfos[i].path))
-            {
-                res = packfs_mirror(NULL, packfsinfos[i].start, packfsinfos[i].end);
-            }
-        }
-        return -1;
-    }
+    int res = packfs_open(path, &res);
+    if(res >= 0)
+        return res;
     
     res = orig_func(path, flags);
     fprintf(stderr, "packfs: open(\"%s\", %d) == %d\n", path, flags, res);
