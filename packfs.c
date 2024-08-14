@@ -92,6 +92,26 @@ int packfs_findfd(FILE* ptr)
     return -1;
 }
 
+int packfs_access(const char* path)
+{
+    char* _path = (char*)path;
+    if(strlen(path) > 2 && _path[0] == '.' && _path[1] == '/')
+        _path += 2;
+
+    if(strncmp(packfs_prefix, _path, strlen(packfs_prefix)) == 0)
+    {
+        for(int i = 0; i < packfsfilesnum; i++)
+        {
+            if(0 == strcmp(_path, packfsinfos[i].path))
+            {
+                return 0;
+            }
+        }
+        return -1;
+    }
+    return -2;
+}
+
 int packfs_mirror(FILE* stream, const char* start, const char* end)
 {
     int res = -1;
@@ -189,26 +209,14 @@ int access(const char *path, int flags)
     typedef int (*orig_func_type)(const char *path, int flags);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "access");
    
-    char* _path = (char*)path;
-    if(strlen(path) > 2 && _path[0] == '.' && _path[1] == '/')
-        _path += 2;
-
-    if(strncmp(packfs_prefix, _path, strlen(packfs_prefix)) == 0)
+    int res = packfs_access(path);
+    if(res >= -1)
     {
-        assert(flags == R_OK);
-        for(int i = 0; i < packfsfilesnum; i++)
-        {
-            if(0 == strcmp(_path, packfsinfos[i].path))
-            {
-                fprintf(stderr, "packfs: Access(\"%s\", %d) == 0\n", path, flags);
-                return 0;
-            }
-        }
-        fprintf(stderr, "packfs: Access(\"%s\", %d) == -1\n", path, flags);
-        return -1;
+        fprintf(stderr, "packfs: Access(\"%s\", %d) == 0\n", path, flags);
+        return res;
     }
     
-    int res = orig_func(path, flags); 
+    res = orig_func(path, flags); 
     fprintf(stderr, "packfs: access(\"%s\", %d) == %d\n", path, flags, res);
     return res;
 }
