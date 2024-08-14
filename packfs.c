@@ -10,8 +10,7 @@
 
 #include "packfs.h"
 
-// TODO: impl open with temp unpack
-// TODO: impl these funcs via fmemopen
+// https://en.cppreference.com/w/cpp/io/c
 
 #define packfs_prefix "dist-native/"
 #define packfs_filefd_min 1000000000
@@ -74,6 +73,9 @@ int packfs_close(int fd)
 
 FILE* packfs_findptr(int fd)
 {
+    if(fd < packfs_filefd_min || fd >= packfs_filefd_max)
+        return NULL;
+    
     for(int k = 0; k < packfs_filefd_max - packfs_filefd_min; k++)
     {
         if(packfs_filefd[k] == fd)
@@ -90,6 +92,22 @@ int packfs_findfd(FILE* ptr)
             return packfs_filefd[k];
     }
     return -1;
+}
+
+ssize_t packfs_read(int fd, void* buf, size_t count)
+{
+    FILE* ptr = packfs_findptr(fd);
+    if(!ptr)
+        return -1;
+    return (ssize_t)fread(buf, 1, count, ptr);
+}
+
+int packfs_seek(int fd, long offset, int whence)
+{
+    FILE* ptr = packfs_findptr(fd);
+    if(!ptr)
+        return -1;
+    return fseek(fd, offset, whence);
 }
 
 int packfs_access(const char* path)
@@ -109,6 +127,39 @@ int packfs_access(const char* path)
         }
         return -1;
     }
+    return -2;
+}
+
+int packfs_stat(const char* path, struct stat *restrict statbuf)
+{
+    char* _path = (char*)path;
+    if(strlen(path) > 2 && _path[0] == '.' && _path[1] == '/')
+        _path += 2;
+    
+    if(strncmp(packfs_prefix, _path, strlen(packfs_prefix)) == 0)
+    {
+        for(int i = 0; i < packfsfilesnum; i++)
+        {
+            if(0 == strcmp(_path, packfsinfos[i].path))
+            {
+                *statbuf = (struct stat){0};
+                statbuf->st_size = (off_t)(packfsinfos[i].end - packfsinfos[i].start);
+                statbuf->st_mode = S_IFREG;
+                return 0;
+            }
+        }
+        for(int i = 0; i < packfsdirsnum; i++)
+        {
+            if(0 == strcmp(_path, packfsdirs[i]))
+            {
+                *statbuf = (struct stat){0};
+                statbuf->st_mode = S_IFDIR;
+                return 0;
+            }
+        }
+        return -1;
+    }
+    
     return -2;
 }
 
@@ -191,18 +242,52 @@ int open(const char *path, int flags)
 
     int res = packfs_open(path, &res);
     if(res >= 0)
+    {
+        fprintf(stderr, "packfs: Open(\"%s\", %d) == %d\n", path, flags, res);
         return res;
+    }
     
     res = orig_func(path, flags);
     fprintf(stderr, "packfs: open(\"%s\", %d) == %d\n", path, flags, res);
     return res;
 }
 
-//ssize_t read(int fd, void buf[.count], size_t count); // https://en.cppreference.com/w/c/io/fread
+// https://en.cppreference.com/w/c/io/fread
+ssize_t read(int fd, void* buf, size_t count)
+{
+    typedef ssize_t (*orig_func_type)(int fd, void* buf, size_t count);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "read");
 
-//off_t lseek(int fd, off_t offset, int whence); // https://en.cppreference.com/w/c/io/fseek
+    ssize_t res = packfs_read(fd, buf, count);
+    if(res >= 0)
+    {
+        fprintf(stderr, "packfs: Read(%d, %p, %zu) == %d\n", fd, buf, count, (int)res);
+        return res;
+    }
 
-// https://en.cppreference.com/w/cpp/io/c
+    res = orig_func(fd, buf, count);
+    fprintf(stderr, "packfs: read(%d, %p, %zu) == %d\n", fd, buf, count, (int)res);
+    return res;
+}
+
+// https://en.cppreference.com/w/c/io/fseek
+off_t lseek(int fd, off_t offset, int whence)
+{
+    typedef off_t (*orig_func_type)(int fd, off_t offset, int whence);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "lseek");
+    
+    int res = packfs_seek(fd, (long)offset, whence);
+    if(res >= 0)
+    {
+        fprintf(stderr, "packfs: Seek(%d, %d, %d) == %d\n", fd, (int)offset, whence, (int)res);
+        return res;
+    }
+
+    res = orig_func(fd, buf, count);
+    fprintf(stderr, "packfs: seek(%d, %d, %d) == %d\n", fd, (int)offset, whence, (int)res);
+    return res;
+}
+
 
 int access(const char *path, int flags) 
 {
@@ -226,38 +311,14 @@ int stat(const char *restrict path, struct stat *restrict statbuf)
     typedef int (*orig_func_type)(const char *restrict path, struct stat *restrict statbuf);
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "stat");
     
-    char* _path = (char*)path;
-    if(strlen(path) > 2 && _path[0] == '.' && _path[1] == '/')
-        _path += 2;
-    
-    if(strncmp(packfs_prefix, _path, strlen(packfs_prefix)) == 0)
+    int res = packfs_stat(path);
+    if(res >= -1)
     {
-        for(int i = 0; i < packfsfilesnum; i++)
-        {
-            if(0 == strcmp(_path, packfsinfos[i].path))
-            {
-                *statbuf = (struct stat){0};
-                statbuf->st_size = (off_t)(packfsinfos[i].end - packfsinfos[i].start);
-                statbuf->st_mode = S_IFREG;
-                fprintf(stderr, "packfs: Stat(\"%s\", %p) == 0\n", path, (void*)statbuf);
-                return 0;
-            }
-        }
-        for(int i = 0; i < packfsdirsnum; i++)
-        {
-            if(0 == strcmp(_path, packfsdirs[i]))
-            {
-                *statbuf = (struct stat){0};
-                statbuf->st_mode = S_IFDIR;
-                fprintf(stderr, "packfs: Stat(\"%s\", %p) == 0\n", path, (void*)statbuf);
-                return 0;
-            }
-        }
         fprintf(stderr, "packfs: Stat(\"%s\", %p) == -1\n", path, (void*)statbuf);
-        return -1;
+        return res;
     }
 
-    int res = orig_func(path, statbuf);
+    res = orig_func(path, statbuf);
     fprintf(stderr, "packfs: stat(\"%s\", %p) == %d\n", path, (void*)statbuf, res);
     return res;
 }
