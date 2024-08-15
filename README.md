@@ -56,7 +56,10 @@ wget https://raw.githubusercontent.com/coreutils/coreutils/master/src/cat.c
 - https://hackage.haskell.org/package/memfd
 - https://github.com/a-darwish/memfd-examples
 - https://github.com/m1m1x/memdlopen/blob/master/main.c
- 
+- https://github.com/TeX-Live/texlive-source/blob/6f1cc5d69c54047f6830a00606e1a9ce65db49cd/texk/web2c/texmfmp.h#L270
+- https://github.com/TeX-Live/texlive-source/blob/c53fad3de49fb163d36facc77c6b0ae0f705a0b5/libs/zlib/zlib-src/gzlib.c#L270
+- https://git.savannah.gnu.org/cgit/libcdio.git
+- https://github.com/libarchive/libarchive/blob/master/contrib/untar.c 
 
 # Syscalls
 ```
