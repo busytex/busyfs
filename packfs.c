@@ -8,31 +8,41 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-#include "packfs.h"
+#define packfs_string_value_(x) #x
+#define packfs_string_value(x) packfs_string_value_(x)
 
-// https://en.cppreference.com/w/cpp/io/c
+#ifdef PACKFS_PREFIX
+#define packfs_prefix packfs_string_value(PACKFS_PREFIX)
+#else
+#define packfs_prefix "packfs/"
+#endif
 
-#define packfs_prefix "dist-native/"
+
 #define packfs_filefd_min 1000000000
 #define packfs_filefd_max 1000001000
 #define packfs_filefd_cnt (packfs_filefd_max - packfs_filefd_min)
+
+#include "packfs.h"
 
 int packfs_filecnt;
 int packfs_filefd[packfs_filefd_cnt];
 FILE* packfs_fileptr[packfs_filefd_cnt];
 
+const char* packfs_sanitize_path(const char* path)
+{
+    return (path != NULL && strlen(path) > 2 && path[0] == '.' && path[1] == '/') ? (path + 2) : path;
+}
+
 int packfs_open(const char* path, FILE** out)
 {
-    char* _path = (char*)path;
-    if(strlen(path) > 2 && _path[0] == '.' && _path[1] == '/')
-        _path += 2;
+    path = packfs_sanitize_path(path);
     
-    if(strncmp(packfs_prefix, _path, strlen(packfs_prefix)) != 0)
+    if(strncmp(packfs_prefix, path, strlen(packfs_prefix)) != 0)
         return -1;
 
     for(int i = 0; i < packfsfilesnum; i++)
     {
-        if(0 == strcmp(_path, packfsinfos[i].path))
+        if(0 == strcmp(path, packfsinfos[i].path))
         {
             FILE* res = fmemopen((void*)packfsinfos[i].start, (size_t)(packfsinfos[i].end - packfsinfos[i].start), "r");
             
@@ -112,15 +122,13 @@ int packfs_seek(int fd, long offset, int whence)
 
 int packfs_access(const char* path)
 {
-    char* _path = (char*)path;
-    if(strlen(path) > 2 && _path[0] == '.' && _path[1] == '/')
-        _path += 2;
+    path = packfs_sanitize_path(path);
 
-    if(strncmp(packfs_prefix, _path, strlen(packfs_prefix)) == 0)
+    if(strncmp(packfs_prefix, path, strlen(packfs_prefix)) == 0)
     {
         for(int i = 0; i < packfsfilesnum; i++)
         {
-            if(0 == strcmp(_path, packfsinfos[i].path))
+            if(0 == strcmp(path, packfsinfos[i].path))
             {
                 return 0;
             }
@@ -132,15 +140,13 @@ int packfs_access(const char* path)
 
 int packfs_stat(const char* path, struct stat *restrict statbuf)
 {
-    char* _path = (char*)path;
-    if(strlen(path) > 2 && _path[0] == '.' && _path[1] == '/')
-        _path += 2;
+    path = packfs_sanitize_path(path);
     
-    if(strncmp(packfs_prefix, _path, strlen(packfs_prefix)) == 0)
+    if(strncmp(packfs_prefix, path, strlen(packfs_prefix)) == 0)
     {
         for(int i = 0; i < packfsfilesnum; i++)
         {
-            if(0 == strcmp(_path, packfsinfos[i].path))
+            if(0 == strcmp(path, packfsinfos[i].path))
             {
                 *statbuf = (struct stat){0};
                 statbuf->st_size = (off_t)(packfsinfos[i].end - packfsinfos[i].start);
@@ -150,7 +156,7 @@ int packfs_stat(const char* path, struct stat *restrict statbuf)
         }
         for(int i = 0; i < packfsdirsnum; i++)
         {
-            if(0 == strcmp(_path, packfsdirs[i]))
+            if(0 == strcmp(path, packfsdirs[i]))
             {
                 *statbuf = (struct stat){0};
                 statbuf->st_mode = S_IFDIR;
