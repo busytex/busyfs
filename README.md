@@ -42,6 +42,7 @@ wget https://raw.githubusercontent.com/coreutils/coreutils/master/src/cat.c
 - https://github.com/jart/cosmopolitan/blob/13b9ecd5379ee32448f9f05dbc1b7c5f7f68b72b/libc/runtime/zipos-open.c
 - https://github.com/guardianproject/libsqlfs
 - https://nanovms.com/dev/tutorials/introducing-memfd_create-anonymous-files-for-nanos-unikernel
+- https://taras.glek.net/post/optimized-zip-format/
 
 # Useful ones
 - https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c

@@ -1,7 +1,7 @@
 URL_busybox ?= https://busybox.net/downloads/busybox-1.33.0.tar.bz2
 
 packfs.so:
-	$(CC) -shared -fPIC packfs.c -o packfs.so -ldl # @packfs.h.txt
+	$(CC) -DPACKFS_LOG -shared -fPIC packfs.c -o packfs.so -ldl # @packfs.h.txt
     
 
 busybox:
