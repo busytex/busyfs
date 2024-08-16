@@ -169,6 +169,7 @@ int packfs_stat(const char* path, struct stat *restrict statbuf)
     return -2;
 }
 
+/*
 int packfs_mirror(FILE* stream, const char* start, const char* end)
 {
     int res = -1;
@@ -177,15 +178,14 @@ int packfs_mirror(FILE* stream, const char* start, const char* end)
         res = memfd_create("", 0);
         write(res, start, (size_t)(end - start));
         lseek(res, 0, SEEK_SET);
-        /*
-        char buf[1024];
-        sprintf(buf, ".tmp_%s.bin", packfsinfos[i].safe_path);
-        FILE* f = fopen(buf, "w+");
-        fwrite(packfsinfos[i].start, 1, (size_t)(packfsinfos[i].end - packfsinfos[i].start), f);
-        fseek(f, 0, SEEK_SET);
-        int res = fileno(f);
-        fprintf(stderr, "packfs: open(\"%s\", %d) == %d\n", path, flags, res);
-        */
+        
+        //char buf[1024];
+        //sprintf(buf, ".tmp_%s.bin", packfsinfos[i].safe_path);
+        //FILE* f = fopen(buf, "w+");
+        //fwrite(packfsinfos[i].start, 1, (size_t)(packfsinfos[i].end - packfsinfos[i].start), f);
+        //fseek(f, 0, SEEK_SET);
+        //int res = fileno(f);
+        //fprintf(stderr, "packfs: open(\"%s\", %d) == %d\n", path, flags, res);
     }
     else
     {
@@ -203,7 +203,7 @@ int packfs_mirror(FILE* stream, const char* start, const char* end)
     }
     return res;
 }
-
+*/
 
 FILE* fopen(const char *path, const char *mode)
 {
