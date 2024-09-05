@@ -7,11 +7,8 @@
 #include <dlfcn.h>
 #include <sys/stat.h>
 
-// 'mmap', 'readv', 'close', 'writev', 'fcntl', 'munmap', 'arch_prctl', 'brk', 'execve', 'exit_group', 'getcwd', 'getdents64', 'ioctl', 'rt_sigaction', 'rt_sigprocmask', 'set_tid_address'
-// https://man7.org/linux/man-pages/man2/mmap.2.html
-// https://learningdaily.dev/reading-and-writing-files-using-memory-mapped-i-o-220fa802aa1c
-// override in fs: 'lstat', 'stat', 'access', 'fopen',
 // gcc -shared -fPIC log_file_access.c -o log_file_access.so -ldl
+// override in fs: 'lstat', 'stat', 'access', 'fopen',
 
 FILE* fopen(const char *path, const char *mode)
 {
