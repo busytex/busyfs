@@ -12,9 +12,9 @@
 
 FILE* fopen(const char *path, const char *mode)
 {
-    typedef FILE* (*orig_fopen_func_type)(const char *path, const char *mode);
+    typedef FILE* (*orig_func_type)(const char *path, const char *mode);
     fprintf(stderr, "log_file_access_preload: fopen(\"%s\", \"%s\")\n", path, mode);
-    orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "fopen");
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "fopen");
     return orig_func(path, mode);
 }
 
@@ -168,24 +168,24 @@ int renameat2(int olddirfd, const char *oldpath, int newdirfd, const char *newpa
 
 int mkdir(const char *path, mode_t mode)
 {
-    typedef int (*orig_fopen_func_type)(const char *path, mode_t mode);
+    typedef int (*orig_func_type)(const char *path, mode_t mode);
     fprintf(stderr, "log_file_access_preload: mkdir(\"%s\", %d)\n", path, (int)mode);
-    orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "mkdir");
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "mkdir");
     return orig_func(path, mode);
 }
 int mkdirat(int dirfd, const char *path, mode_t mode)
 {
-    typedef int (*orig_fopen_func_type)(int dirrfd, const char *path, mode_t mode);
+    typedef int (*orig_func_type)(int dirrfd, const char *path, mode_t mode);
     fprintf(stderr, "log_file_access_preload: mkdirat(%d, \"%s\", %d)\n", dirfd, path, (int)mode);
-    orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "mkdirat");
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "mkdirat");
     return orig_func(dirfd, path, mode);
 }
 
 
 int rmdir(const char *path)
 {
-    typedef int (*orig_fopen_func_type)(const char *path);
+    typedef int (*orig_func_type)(const char *path);
     fprintf(stderr, "log_file_access_preload: rmdir(\"%s\")\n", path);
-    orig_fopen_func_type orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "rmdir");
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "rmdir");
     return orig_func(path);
 }
