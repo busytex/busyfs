@@ -43,6 +43,8 @@ wget https://raw.githubusercontent.com/coreutils/coreutils/master/src/cat.c
 - https://github.com/guardianproject/libsqlfs
 - https://nanovms.com/dev/tutorials/introducing-memfd_create-anonymous-files-for-nanos-unikernel
 - https://taras.glek.net/post/optimized-zip-format/
+- https://gdal.org/user/virtual_file_systems.html#vsizip-zip-archives
+- https://github.com/sozip/sozip-spec/blob/master/sozip_specification.md
 
 # Useful ones
 - https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c
@@ -61,6 +63,9 @@ wget https://raw.githubusercontent.com/coreutils/coreutils/master/src/cat.c
 - https://github.com/TeX-Live/texlive-source/blob/c53fad3de49fb163d36facc77c6b0ae0f705a0b5/libs/zlib/zlib-src/gzlib.c#L270
 - https://git.savannah.gnu.org/cgit/libcdio.git
 - https://github.com/libarchive/libarchive/blob/master/contrib/untar.c 
+- https://github.com/google/fuse-archive
+- https://github.com/libarchive/libarchive/issues/1764
+- https://github.com/libarchive/libarchive/blob/master/libarchive/archive_read_open_memory.c
 
 # Syscalls
 ```

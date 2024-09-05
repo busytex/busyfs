@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <dlfcn.h>
 #include <assert.h>
+#include <stdbool.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 
@@ -248,11 +249,38 @@ int fileno(FILE *stream)
     
     return res;
 }
+typedef int (*orig_func_type_open)(const char *path, int flags);
 
-int open(const char *path, int flags)
+typedef struct 
 {
-    typedef int (*orig_func_type)(const char *path, int flags);
-    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "open");
+    orig_func_type_open open;
+} packfs_context;
+
+typedef struct
+{
+    int packfsfilesnum, packfsdirsnum;
+    struct { const char* safe_path; const char *path; const char* start; const char* end; bool isdir; } packfsinfos[];
+} packfs_index;
+
+packfs_context packfs_ensure_context()
+{
+    static packfs_context packfs_ctx;
+    static bool packfs_initialized = false;
+    if(!packfs_initialized)
+    {
+        packfs_ctx.open = dlsym(RTLD_NEXT, "open"); //(orig_func_type_open)
+        packfs_initialized = true;
+    }
+    
+    return packfs_ctx;
+}
+
+int open(const char *path, int flags, ...)
+{
+    packfs_context packfs_ctx = packfs_ensure_context();
+
+    //typedef int (*orig_func_type)(const char *path, int flags);
+    //orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "open");
 
     int res = packfs_open(path, NULL);
     if(res >= 0)
@@ -263,7 +291,7 @@ int open(const char *path, int flags)
         return res;
     }
     
-    res = orig_func(path, flags);
+    res = packfs_ctx.open(path, flags);
 #ifdef PACKFS_LOG
     fprintf(stderr, "packfs: open(\"%s\", %d) == %d\n", path, flags, res);
 #endif
